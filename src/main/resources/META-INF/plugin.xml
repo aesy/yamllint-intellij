@@ -1,0 +1,23 @@
+<idea-plugin>
+    <id>io.aesy.yamllint</id>
+    <name>Yamllint</name>
+    <version>1.0</version>
+    <vendor email="isak.wertwein@gmail.com" url="https://github.com/aesy/yamllint-intellij">Isak Wertwein</vendor>
+    <category>Inspections</category>
+
+    <description><![CDATA[
+     ]]></description>
+
+    <change-notes><![CDATA[
+    ]]></change-notes>
+
+    <idea-version since-build="IC-2020.1"/>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+    </extensions>
+
+    <actions>
+    </actions>
+</idea-plugin>
