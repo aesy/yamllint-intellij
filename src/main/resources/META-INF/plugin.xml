@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>io.aesy.yamllint</id>
     <name>Yamllint</name>
-    <version>1.0</version>
+    <version>0.1</version>
     <vendor email="isak.wertwein@gmail.com" url="https://github.com/aesy/yamllint-intellij">Isak Wertwein</vendor>
     <category>Inspections</category>
 
@@ -11,11 +11,15 @@
     <change-notes><![CDATA[
     ]]></change-notes>
 
-    <idea-version since-build="IC-2020.1"/>
+    <idea-version since-build="201.3803.32"/>
 
-    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>org.jetbrains.plugins.yaml</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <externalAnnotator
+                language="yaml"
+                implementationClass="io.aesy.yamllint.YamllintExternalAnnotator"/>
     </extensions>
 
     <actions>

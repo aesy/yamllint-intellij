@@ -20,6 +20,7 @@ intellij {
     version = "IC-2020.1"
     pluginName = rootProject.name
     updateSinceUntilBuild = false
+    setPlugins("org.jetbrains.plugins.yaml")
 }
 
 tasks.withType<KotlinCompile> {
