@@ -4,42 +4,76 @@ import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
+import java.io.File
+import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.text.ParseException
 import java.time.Duration
 
 @Service
 class YamllintRunner(
-    private val project: Project
+    project: Project
 ) {
     companion object {
-        private val TIME_OUT = Duration.ofSeconds(30)
+        private val logger = getLogger()
+        private val timeout = Duration.ofSeconds(30)
     }
 
-    private val logger = getLogger()
+    private val executor = project.getService<CommandLineExecutor>()
+    private val parser = project.getService<YamllintOutputParser>()
 
     fun run(
-        workDirectory: String? = project.basePath,
         configPath: String? = null,
+        workDirectory: String = "",
         files: Array<String> = arrayOf(".")
     ): List<YamllintProblem> {
-        val command = GeneralCommandLine()
-        command.charset = StandardCharsets.UTF_8
-        command.exePath = "yamllint"
+        return createCommand(configPath)
+            .withParameters(*files)
+            .withWorkDirectory(workDirectory)
+            .execute()
+    }
 
-        command.setWorkDirectory(workDirectory)
-        command.addParameters("--format", "parsable")
+    fun run(
+        configPath: String? = null,
+        content: String
+    ): List<YamllintProblem> {
+        val tempFile = try {
+            File.createTempFile("yamllint-intellij-input-", ".yaml").apply {
+                writeText(content)
+            }
+        } catch (e: IOException) {
+            logger.error("Failed to execute yamllint: Failed to create temporary file", e)
+            return emptyList()
+        }
+
+        val result = createCommand(configPath)
+            .withParameters("-")
+            .withInput(tempFile)
+            .execute()
+
+        if (!tempFile.delete()) {
+            logger.warn("Failed to delete temporary file ${tempFile.canonicalPath}")
+        }
+
+        return result
+    }
+
+    private fun createCommand(configPath: String?): GeneralCommandLine {
+        val command = GeneralCommandLine()
+            .withCharset(StandardCharsets.UTF_8)
+            .withExePath("yamllint")
+            .withParameters("--format", "parsable")
 
         if (!configPath.isNullOrBlank()) {
             command.addParameters("--config", configPath)
         }
 
-        for (file in files) {
-            command.addParameter(file)
-        }
+        return command
+    }
 
+    private fun GeneralCommandLine.execute(): List<YamllintProblem> {
         val output = try {
-            CommandLineExecutor.execute(command, TIME_OUT)
+            executor.execute(this, timeout)
         } catch (e: ExecutionException) {
             logger.error("Failed to execute yamllint: Failed to execute command", e)
             return emptyList()
@@ -51,7 +85,7 @@ class YamllintRunner(
             logger.debug("Yamllint output: ${output.stdout}")
 
             try {
-                return YamllintOutputParser.parse(output.stdout)
+                return parser.parse(output.stdout)
             } catch (e: ParseException) {
                 logger.error("Failed to execute yamllint: Could not parse output", e)
             }

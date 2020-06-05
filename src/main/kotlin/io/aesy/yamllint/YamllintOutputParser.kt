@@ -1,17 +1,21 @@
 package io.aesy.yamllint
 
+import com.intellij.openapi.components.Service
 import com.intellij.util.LineSeparator
 import java.text.ParseException
 
-object YamllintOutputParser {
-    private val PATTERN = Regex("(?<file>.+):(?<line>\\d+):(?<column>\\d+): \\[(?<level>.+)] (?<message>.+)")
+@Service
+class YamllintOutputParser {
+    companion object {
+        private val pattern = Regex("(?<file>.+):(?<line>\\d+):(?<column>\\d+): \\[(?<level>.+)] (?<message>.+)")
+    }
 
     @Throws(ParseException::class)
     fun parse(input: String): List<YamllintProblem> {
         return input
             .split(LineSeparator.LF.separatorString)
             .filter { line -> line.isNotBlank() }
-            .mapNotNull(PATTERN::matchEntire)
+            .mapNotNull(pattern::matchEntire)
             .map { result ->
                 YamllintProblem(
                     file = result.getString("file"),

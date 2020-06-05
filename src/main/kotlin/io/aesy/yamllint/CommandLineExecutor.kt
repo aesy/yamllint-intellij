@@ -3,11 +3,15 @@ package io.aesy.yamllint
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.*
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.util.Key
 import java.time.Duration
 
-object CommandLineExecutor {
-    private val logger = getLogger()
+@Service
+class CommandLineExecutor {
+    companion object {
+        private val logger = getLogger()
+    }
 
     @Throws(ExecutionException::class)
     fun execute(commandLine: GeneralCommandLine, timeout: Duration? = null): ProcessOutput {
