@@ -3,6 +3,7 @@ package io.aesy.yamllint
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.ExternalAnnotator
 import com.intellij.lang.annotation.HighlightSeverity
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -10,6 +11,7 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import org.jetbrains.yaml.psi.YAMLFile
+import kotlin.math.min
 
 class YamllintExternalAnnotator : ExternalAnnotator<YAMLFile, List<YamllintProblem>>() {
     override fun collectInformation(file: PsiFile): YAMLFile? {
@@ -18,6 +20,10 @@ class YamllintExternalAnnotator : ExternalAnnotator<YAMLFile, List<YamllintProbl
         }
 
         return file
+    }
+
+    override fun collectInformation(file: PsiFile, editor: Editor, hasErrors: Boolean): YAMLFile? {
+        return collectInformation(file)
     }
 
     override fun doAnnotate(file: YAMLFile): List<YamllintProblem> {
@@ -45,17 +51,24 @@ class YamllintExternalAnnotator : ExternalAnnotator<YAMLFile, List<YamllintProbl
         val document = documentManager.getDocument(file) ?: return
 
         for ((_, line, column, level, message) in problems) {
-            val startOffset = StringUtil.lineColToOffset(file.text, line, column)
-            val endOffset = document.getLineEndOffset(line)
-            val range = TextRange(startOffset, endOffset)
-            val severity = when (level) {
-                YamllintProblem.Level.WARNING -> HighlightSeverity.WARNING
-                YamllintProblem.Level.ERROR -> HighlightSeverity.ERROR
+            val annotationLine = if (document.lineCount < line) document.lineCount - 1 else line - 1
+            val annotationColumn = column - 1
+            val startOffset = document.getLineStartOffset(annotationLine) + annotationColumn
+            val endOffset = document.getLineEndOffset(annotationLine)
+            val range = TextRange.create(min(startOffset, endOffset), endOffset)
+            val severity = level.toHighlightSeverity()
+            val annotation = holder.newAnnotation(severity, message).range(range)
+
+            if (startOffset !in 0 until endOffset) {
+                annotation.afterEndOfLine()
             }
 
-            holder.newAnnotation(severity, message)
-                .range(range)
-                .create()
+            annotation.create()
         }
+    }
+
+    private fun YamllintProblem.Level.toHighlightSeverity(): HighlightSeverity = when (this) {
+        YamllintProblem.Level.WARNING -> HighlightSeverity.WARNING
+        YamllintProblem.Level.ERROR -> HighlightSeverity.ERROR
     }
 }
