@@ -53,10 +53,14 @@ class YamllintOutputParser {
         return when (group.value) {
             "warning" -> YamllintProblem.Level.WARNING
             "error" -> YamllintProblem.Level.ERROR
-            else -> throw ParseException(
-                "Expected $name to be one of ${YamllintProblem.Level.values()}, but got ${group.value}",
-                group.range.first
-            )
+            else -> {
+                val alternatives = YamllintProblem.Level.values().asList()
+
+                throw ParseException(
+                    "Expected $name to be one of $alternatives, but got ${group.value}",
+                    group.range.first
+                )
+            }
         }
     }
 }

@@ -79,7 +79,7 @@ class YamllintRunner(
             return emptyList()
         }
 
-        val successExitCodes = 0..2
+        val successExitCodes = (0..2).toList()
 
         if (output.exitCode in successExitCodes) {
             logger.debug("Yamllint output: ${output.stdout}")
