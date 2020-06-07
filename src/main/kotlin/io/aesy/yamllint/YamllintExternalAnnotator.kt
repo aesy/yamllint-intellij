@@ -4,6 +4,7 @@ import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.ExternalAnnotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.progress.PerformInBackgroundOption
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -63,8 +64,14 @@ class YamllintExternalAnnotator : ExternalAnnotator<YAMLFile, List<YamllintProbl
 
     private fun lintFile(file: PsiFile): List<YamllintProblem> {
         val project = file.project
+        val fileManager = FileDocumentManager.getInstance()
         val fileSystem = LocalFileSystem.getInstance()
         val linter = project.getService<YamllintRunner>()
+
+        if (fileManager.isFileModified(file.virtualFile)) {
+            // We can't lint the file itself if there are changes in memory
+            return linter.run(null, file.text)
+        }
 
         // basePath may be null in default project
         val basePath = project.basePath
