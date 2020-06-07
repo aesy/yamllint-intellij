@@ -7,7 +7,7 @@ import java.text.ParseException
 @Service
 class YamllintOutputParser {
     companion object {
-        private val pattern = Regex("(?<file>.+):(?<line>\\d+):(?<column>\\d+): \\[(?<level>.+)] (?<message>.+)")
+        private val pattern = Regex("(?<file>.+?):(?<line>\\d+):(?<column>\\d+): \\[(?<level>.+?)] (?<message>.+)")
     }
 
     @Throws(ParseException::class)
