@@ -3,13 +3,10 @@
     <name>Yamllint</name>
     <version>0.1</version>
     <vendor email="isak.wertwein@gmail.com" url="https://github.com/aesy/yamllint-intellij">Isak Wertwein</vendor>
-    <category>Inspections</category>
+    <category>Inspection</category>
 
     <description><![CDATA[
      ]]></description>
-
-    <change-notes><![CDATA[
-    ]]></change-notes>
 
     <idea-version since-build="201.3803.32"/>
 
@@ -21,7 +18,4 @@
                 language="yaml"
                 implementationClass="io.aesy.yamllint.YamllintExternalAnnotator"/>
     </extensions>
-
-    <actions>
-    </actions>
 </idea-plugin>

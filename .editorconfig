@@ -1,0 +1,18 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.{html, xml, json, yml, yaml}]
+indent_style = space
+tab_width = 4
+
+[*.{kt, java}]
+indent_style = space
+tab_width = 4
