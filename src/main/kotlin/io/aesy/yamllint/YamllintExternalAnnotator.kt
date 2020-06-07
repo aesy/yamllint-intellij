@@ -4,8 +4,12 @@ import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.ExternalAnnotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.progress.PerformInBackgroundOption
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.impl.BackgroundableProcessIndicator
+import com.intellij.openapi.util.Computable
 import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.psi.PsiDocumentManager
@@ -27,6 +31,37 @@ class YamllintExternalAnnotator : ExternalAnnotator<YAMLFile, List<YamllintProbl
     }
 
     override fun doAnnotate(file: YAMLFile): List<YamllintProblem> {
+        val progressManager = ProgressManager.getInstance()
+        val computable = Computable { lintFile(file) }
+        val indicator = createIndicator(file)
+
+        return progressManager.runProcess(computable, indicator)
+    }
+
+    override fun apply(file: PsiFile, problems: List<YamllintProblem>, holder: AnnotationHolder) {
+        val documentManager = PsiDocumentManager.getInstance(file.project)
+        val document = documentManager.getDocument(file) ?: return
+
+        for ((_, line, column, level, message) in problems) {
+            val annotationLine = if (document.lineCount < line) document.lineCount - 1 else line - 1
+            val annotationColumn = column - 1
+            val startOffset = document.getLineStartOffset(annotationLine) + annotationColumn
+            val endOffset = document.getLineEndOffset(annotationLine)
+            val range = TextRange.create(min(startOffset, endOffset), endOffset)
+            val severity = level.toHighlightSeverity()
+            val annotation = holder.newAnnotation(severity, message)
+                .range(range)
+                .needsUpdateOnTyping()
+
+            if (startOffset !in 0 until endOffset) {
+                annotation.afterEndOfLine()
+            }
+
+            annotation.create()
+        }
+    }
+
+    private fun lintFile(file: PsiFile): List<YamllintProblem> {
         val project = file.project
         val fileSystem = LocalFileSystem.getInstance()
         val linter = project.getService<YamllintRunner>()
@@ -46,25 +81,15 @@ class YamllintExternalAnnotator : ExternalAnnotator<YAMLFile, List<YamllintProbl
         return linter.run(null, workspace.path, arrayOf(relativePath))
     }
 
-    override fun apply(file: PsiFile, problems: List<YamllintProblem>, holder: AnnotationHolder) {
-        val documentManager = PsiDocumentManager.getInstance(file.project)
-        val document = documentManager.getDocument(file) ?: return
-
-        for ((_, line, column, level, message) in problems) {
-            val annotationLine = if (document.lineCount < line) document.lineCount - 1 else line - 1
-            val annotationColumn = column - 1
-            val startOffset = document.getLineStartOffset(annotationLine) + annotationColumn
-            val endOffset = document.getLineEndOffset(annotationLine)
-            val range = TextRange.create(min(startOffset, endOffset), endOffset)
-            val severity = level.toHighlightSeverity()
-            val annotation = holder.newAnnotation(severity, message).range(range)
-
-            if (startOffset !in 0 until endOffset) {
-                annotation.afterEndOfLine()
-            }
-
-            annotation.create()
-        }
+    private fun createIndicator(file: PsiFile): ProgressIndicator {
+        return BackgroundableProcessIndicator(
+            file.project,
+            "Yamllint: Analyzing ${file.name}...",
+            PerformInBackgroundOption.ALWAYS_BACKGROUND,
+            "Stop",
+            "Stop file analysis",
+            false
+        )
     }
 
     private fun YamllintProblem.Level.toHighlightSeverity(): HighlightSeverity = when (this) {
