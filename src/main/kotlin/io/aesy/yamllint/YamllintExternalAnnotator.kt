@@ -68,24 +68,30 @@ class YamllintExternalAnnotator : ExternalAnnotator<YAMLFile, List<YamllintProbl
         val fileSystem = LocalFileSystem.getInstance()
         val linter = project.getService<YamllintRunner>()
 
-        if (fileManager.isFileModified(file.virtualFile)) {
-            // We can't lint the file itself if there are changes in memory
-            return linter.run(null, file.text)
+        try {
+            if (fileManager.isFileModified(file.virtualFile)) {
+                // We can't lint the file itself if there are changes in memory
+                return linter.run(null, file.text)
+            }
+
+            // basePath may be null in default project
+            val basePath = project.basePath
+                ?: return linter.run(null, file.text)
+
+            // file may be null, unclear when
+            val workspace = fileSystem.findFileByPath(basePath)
+                ?: return linter.run(null, file.text)
+
+            // relative path may be null if editing a fragment
+            val relativePath = VfsUtil.getRelativePath(file.virtualFile, workspace)
+                ?: return linter.run(null, file.text)
+
+            return linter.run(null, workspace.path, arrayOf(relativePath))
+        } catch (e: YamllintException) {
+            YamllintNotifications.error("Failed to execute yamllint\n$e\n${e.cause}").notify(project)
+
+            return emptyList()
         }
-
-        // basePath may be null in default project
-        val basePath = project.basePath
-            ?: return linter.run(null, file.text)
-
-        // file may be null, unclear when
-        val workspace = fileSystem.findFileByPath(basePath)
-            ?: return linter.run(null, file.text)
-
-        // relative path may be null if editing a fragment
-        val relativePath = VfsUtil.getRelativePath(file.virtualFile, workspace)
-            ?: return linter.run(null, file.text)
-
-        return linter.run(null, workspace.path, arrayOf(relativePath))
     }
 
     private fun createIndicator(file: PsiFile): ProgressIndicator {

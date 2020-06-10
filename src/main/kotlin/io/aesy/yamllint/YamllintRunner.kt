@@ -22,6 +22,7 @@ class YamllintRunner(
     private val executor = project.getService<CommandLineExecutor>()
     private val parser = project.getService<YamllintOutputParser>()
 
+    @Throws(YamllintException::class)
     fun run(
         configPath: String? = null,
         workDirectory: String = "",
@@ -33,6 +34,7 @@ class YamllintRunner(
             .execute()
     }
 
+    @Throws(YamllintException::class)
     fun run(
         configPath: String? = null,
         content: String
@@ -42,20 +44,19 @@ class YamllintRunner(
                 writeText(content)
             }
         } catch (e: IOException) {
-            logger.error("Failed to execute yamllint: Failed to create temporary file", e)
-            return emptyList()
+            throw YamllintException("Failed to create temporary file", e)
         }
 
-        val result = createCommand(configPath)
-            .withParameters("-")
-            .withInput(tempFile)
-            .execute()
-
-        if (!tempFile.delete()) {
-            logger.warn("Failed to delete temporary file ${tempFile.canonicalPath}")
+        return try {
+            createCommand(configPath)
+                .withParameters("-")
+                .withInput(tempFile)
+                .execute()
+        } finally {
+            if (!tempFile.delete()) {
+                logger.warn("Failed to delete temporary file ${tempFile.canonicalPath}")
+            }
         }
-
-        return result
     }
 
     private fun createCommand(configPath: String?): GeneralCommandLine {
@@ -71,12 +72,12 @@ class YamllintRunner(
         return command
     }
 
+    @Throws(YamllintException::class)
     private fun GeneralCommandLine.execute(): List<YamllintProblem> {
         val output = try {
             executor.execute(this, timeout)
         } catch (e: ExecutionException) {
-            logger.error("Failed to execute yamllint: Failed to execute command", e)
-            return emptyList()
+            throw YamllintException("Failed to execute command", e)
         }
 
         val successExitCodes = (0..2).toList()
@@ -87,13 +88,12 @@ class YamllintRunner(
             try {
                 return parser.parse(output.stdout)
             } catch (e: ParseException) {
-                logger.error("Failed to execute yamllint: Could not parse output", e)
+                throw YamllintException("Could not parse output", e)
             }
-        } else {
-            logger.error("Failed to execute yamllint: Expected exit code to be one of $successExitCodes but was ${output.exitCode}")
-            logger.debug("Yamllint error output: ${output.stderr}")
         }
 
-        return emptyList()
+        logger.debug("Yamllint error output: ${output.stderr}")
+
+        throw YamllintException("Expected exit code to be one of $successExitCodes but was ${output.exitCode}")
     }
 }
