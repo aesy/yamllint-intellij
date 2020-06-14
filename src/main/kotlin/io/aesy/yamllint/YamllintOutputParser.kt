@@ -15,23 +15,30 @@ class YamllintOutputParser {
         return input
             .split(LineSeparator.LF.separatorString)
             .filter { line -> line.isNotBlank() }
-            .mapNotNull(pattern::matchEntire)
-            .map { result ->
-                YamllintProblem(
-                    file = result.getString("file"),
-                    line = result.getInt("line"),
-                    column = result.getInt("column"),
-                    level = result.getLevel("level"),
-                    message = result.getString("message")
-                )
-            }
+            .mapIndexed(this::parseLine)
     }
 
+    @Throws(ParseException::class)
+    private fun parseLine(line: Int, text: String): YamllintProblem {
+        val result = pattern.matchEntire(text)
+            ?: throw ParseException("Line $line doesn't match excepected pattern", -1)
+
+        return YamllintProblem(
+            file = result.getString("file"),
+            line = result.getInt("line"),
+            column = result.getInt("column"),
+            level = result.getLevel("level"),
+            message = result.getString("message")
+        )
+    }
+
+    @Throws(ParseException::class)
     private fun MatchResult.getString(name: String): String {
         return groups[name]?.value
             ?: throw ParseException("$name part is missing", -1)
     }
 
+    @Throws(ParseException::class)
     private fun MatchResult.getInt(name: String): Int {
         val group = groups[name]
             ?: throw ParseException("$name part is missing", -1)
@@ -46,6 +53,7 @@ class YamllintOutputParser {
         }
     }
 
+    @Throws(ParseException::class)
     private fun MatchResult.getLevel(name: String): YamllintProblem.Level {
         val group = groups[name]
             ?: throw ParseException("$name part is missing", -1)

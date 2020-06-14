@@ -17,6 +17,12 @@ $ `gradle buildPlugin`
 
 This will create a zip located in `build/distributions/`.
 
+#### Test
+
+Run the tests as you would in any other gradle project:
+
+$ `gradle test`
+
 #### Run
 
 To run the plugin from the command line, the following command can be used:

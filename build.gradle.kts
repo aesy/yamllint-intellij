@@ -10,11 +10,15 @@ version = "0.1"
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
+    testImplementation("io.strikt:strikt-core:0.26.1")
 }
 
 intellij {
@@ -24,13 +28,19 @@ intellij {
     setPlugins("org.jetbrains.plugins.yaml")
 }
 
-tasks.withType<KotlinCompile> {
-    sourceCompatibility = "1.8"
-    targetCompatibility = "1.8"
+tasks {
+    withType<KotlinCompile> {
+        sourceCompatibility = "1.8"
+        targetCompatibility = "1.8"
 
-    kotlinOptions {
-        jvmTarget = "1.8"
-        apiVersion = "1.3"
-        languageVersion = "1.3"
+        kotlinOptions {
+            jvmTarget = "1.8"
+            apiVersion = "1.3"
+            languageVersion = "1.3"
+        }
+    }
+
+    withType<Test> {
+        useJUnitPlatform()
     }
 }
