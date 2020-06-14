@@ -29,6 +29,10 @@ intellij {
 }
 
 tasks {
+    withType<Wrapper> {
+        gradleVersion = "6.5"
+    }
+
     withType<KotlinCompile> {
         sourceCompatibility = "1.8"
         targetCompatibility = "1.8"

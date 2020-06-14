@@ -1,5 +1,6 @@
 # Yamllint support for IntelliJ-based IDEs
 
+[![Build status](https://img.shields.io/github/workflow/status/aesy/yamllint-intellij/Continous%20Integration?style=flat-square)](https://github.com/aesy/yamllint-intellij/actions)
 [![MIT license](https://img.shields.io/github/license/aesy/yamllint-intellij.svg?style=flat-square)](https://github.com/aesy/yamllint-intellij/blob/master/LICENSE)
 
 ## Development
@@ -13,7 +14,9 @@
 
 To compile and package the plugin, simply issue the following command:
 
-$ `gradle buildPlugin`
+```sh
+$ ./gradlew buildPlugin
+```
 
 This will create a zip located in `build/distributions/`.
 
@@ -21,13 +24,17 @@ This will create a zip located in `build/distributions/`.
 
 Run the tests as you would in any other gradle project:
 
-$ `gradle test`
+```sh
+$ ./gradlew test
+```
 
 #### Run
 
 To run the plugin from the command line, the following command can be used:
 
-$ `gradle runIde`
+```sh
+$ ./gradlew runIde
+```
 
 This will start IntelliJ Community with all necessary plugins loaded. Logs are located at 
 `build/idea-sandbox/system/log/idea.log`.

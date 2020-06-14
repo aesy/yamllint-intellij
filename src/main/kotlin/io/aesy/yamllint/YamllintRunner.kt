@@ -94,6 +94,9 @@ class YamllintRunner(
 
         logger.debug("Yamllint error output: ${output.stderr}")
 
+        println(output.stdout)
+        println(output.stderr)
+
         throw YamllintException("Expected exit code to be one of $successExitCodes but was ${output.exitCode}")
     }
 }
