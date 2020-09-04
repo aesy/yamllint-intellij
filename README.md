@@ -1,6 +1,7 @@
 # Yamllint support for IntelliJ-based IDEs
 
 [![Build status](https://img.shields.io/github/workflow/status/aesy/yamllint-intellij/Continous%20Integration?style=flat-square)](https://github.com/aesy/yamllint-intellij/actions)
+[![Test coverage](https://img.shields.io/codecov/c/github/aesy/yamllint-intellij?style=flat-square)](https://codecov.io/github/aesy/yamllint-intellij)
 [![MIT license](https://img.shields.io/github/license/aesy/yamllint-intellij.svg?style=flat-square)](https://github.com/aesy/yamllint-intellij/blob/master/LICENSE)
 
 ## Development

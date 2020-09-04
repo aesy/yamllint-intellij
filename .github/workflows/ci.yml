@@ -36,3 +36,7 @@ jobs:
         sudo pip install --prefix /usr/local yamllint
     - name: Test with Gradle
       run: ./gradlew test --info
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+      with:
+        file: build/reports/jacoco/test/jacocoTestReport.xml
