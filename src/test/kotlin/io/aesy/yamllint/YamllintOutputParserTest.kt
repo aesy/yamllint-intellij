@@ -72,7 +72,8 @@ class YamllintOutputParserTest {
             return Stream.of(
                 Arguments.of("-"),
                 Arguments.of("invalid"),
-                Arguments.of("f:1:1: [invalid] m")
+                Arguments.of("file:1:1: [error]"),
+                Arguments.of("file:1:1: [invalid] message")
             )
         }
     }

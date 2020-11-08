@@ -14,7 +14,7 @@ class YamllintOutputParser {
     fun parse(input: String): List<YamllintProblem> {
         return input
             .split(LineSeparator.LF.separatorString)
-            .filter { line -> line.isNotBlank() }
+            .filter(String::isNotBlank)
             .mapIndexed(this::parseLine)
     }
 
