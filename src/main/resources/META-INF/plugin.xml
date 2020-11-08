@@ -8,7 +8,7 @@
     <description><![CDATA[
      ]]></description>
 
-    <idea-version since-build="201.3803.32"/>
+    <idea-version since-build="201.6668.113"/>
 
     <depends>com.intellij.modules.lang</depends>
     <depends>org.jetbrains.plugins.yaml</depends>
