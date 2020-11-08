@@ -13,7 +13,17 @@
     <depends>com.intellij.modules.lang</depends>
     <depends>org.jetbrains.plugins.yaml</depends>
 
+    <resource-bundle>messages.YamllintBundle</resource-bundle>
+
     <extensions defaultExtensionNs="com.intellij">
+        <projectService serviceImplementation="io.aesy.yamllint.YamllintSettingsProvider"/>
+
+        <projectConfigurable
+                instance="io.aesy.yamllint.YamllintConfigurable"
+                groupId="tools"
+                key="settings.yaml.linters.yamllint.configurable.name"
+                bundle="messages.YamllintBundle"/>
+
         <externalAnnotator
                 language="yaml"
                 implementationClass="io.aesy.yamllint.YamllintExternalAnnotator"/>
