@@ -11,7 +11,7 @@ import com.intellij.openapi.project.Project
 class YamllintSettingsProvider(
     project: Project
 ) : PersistentStateComponent<YamllintSettings> {
-    private val analyzer = project.getService<YamllintProjectAnalyzer>()
+    private val analyzer = project.service<YamllintProjectAnalyzer>()
 
     private lateinit var settings: YamllintSettings
 

@@ -1,6 +1,7 @@
 package io.aesy.yamllint
 
 import com.intellij.execution.process.ProcessOutput
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.util.ResourceUtil
 import io.mockk.every
@@ -23,7 +24,7 @@ class YamllintExecutableFinderUnitTest : JUnit5PlatformTest() {
         val output = ProcessOutput(0)
         output.appendStdout(file.path)
 
-        every { project.getService<CommandLineExecutor>() } returns commandLineExecutor
+        every { project.service<CommandLineExecutor>() } returns commandLineExecutor
         every { commandLineExecutor.execute(any(), any()) } returns output
 
         val finder = YamllintExecutableFinder(project)
@@ -38,7 +39,7 @@ class YamllintExecutableFinderUnitTest : JUnit5PlatformTest() {
         @MockK project: Project,
         @MockK commandLineExecutor: CommandLineExecutor
     ) {
-        every { project.getService<CommandLineExecutor>() } returns commandLineExecutor
+        every { project.service<CommandLineExecutor>() } returns commandLineExecutor
         every { commandLineExecutor.execute(any(), any()) } returns ProcessOutput(-1)
 
         val finder = YamllintExecutableFinder(project)

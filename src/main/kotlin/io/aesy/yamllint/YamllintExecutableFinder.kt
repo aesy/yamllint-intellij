@@ -3,6 +3,7 @@ package io.aesy.yamllint
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VfsUtil
@@ -20,7 +21,7 @@ class YamllintExecutableFinder(
         private val timeout = Duration.ofSeconds(1)
     }
 
-    private val executor = project.getService<CommandLineExecutor>()
+    private val executor = project.service<CommandLineExecutor>()
 
     fun find(): VirtualFile? {
         val command = GeneralCommandLine()

@@ -1,5 +1,6 @@
 package io.aesy.yamllint
 
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
@@ -21,8 +22,8 @@ class YamllintProjectAnalyzerUnitTest : JUnit5PlatformTest() {
         @MockK confFinder: YamllintConfigurationFinder,
         @MockK conf: PsiFile
     ) {
-        every { project.getService<YamllintExecutableFinder>() } returns binFinder
-        every { project.getService<YamllintConfigurationFinder>() } returns confFinder
+        every { project.service<YamllintExecutableFinder>() } returns binFinder
+        every { project.service<YamllintConfigurationFinder>() } returns confFinder
         every { binFinder.find() } returns null
         every { confFinder.find() } returns conf
         every { conf.virtualFile.path } returns ".yamllint"
@@ -41,8 +42,8 @@ class YamllintProjectAnalyzerUnitTest : JUnit5PlatformTest() {
         @MockK confFinder: YamllintConfigurationFinder,
         @MockK conf: PsiFile
     ) {
-        every { project.getService<YamllintExecutableFinder>() } returns binFinder
-        every { project.getService<YamllintConfigurationFinder>() } returns confFinder
+        every { project.service<YamllintExecutableFinder>() } returns binFinder
+        every { project.service<YamllintConfigurationFinder>() } returns confFinder
         every { binFinder.find() } returns null
         every { confFinder.find() } returns conf
         every { conf.virtualFile.path } returns ".yamllint"
@@ -61,8 +62,8 @@ class YamllintProjectAnalyzerUnitTest : JUnit5PlatformTest() {
         @MockK confFinder: YamllintConfigurationFinder,
         @MockK executable: VirtualFile
     ) {
-        every { project.getService<YamllintExecutableFinder>() } returns binFinder
-        every { project.getService<YamllintConfigurationFinder>() } returns confFinder
+        every { project.service<YamllintExecutableFinder>() } returns binFinder
+        every { project.service<YamllintConfigurationFinder>() } returns confFinder
         every { binFinder.find() } returns executable
         every { executable.path } returns "/usr/bin/yamllint"
         every { confFinder.find() } returns null
@@ -80,8 +81,8 @@ class YamllintProjectAnalyzerUnitTest : JUnit5PlatformTest() {
         @MockK binFinder: YamllintExecutableFinder,
         @MockK confFinder: YamllintConfigurationFinder
     ) {
-        every { project.getService<YamllintExecutableFinder>() } returns binFinder
-        every { project.getService<YamllintConfigurationFinder>() } returns confFinder
+        every { project.service<YamllintExecutableFinder>() } returns binFinder
+        every { project.service<YamllintConfigurationFinder>() } returns confFinder
         every { binFinder.find() } returns null
         every { confFinder.find() } returns null
 

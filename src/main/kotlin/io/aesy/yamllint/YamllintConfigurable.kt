@@ -1,6 +1,7 @@
 package io.aesy.yamllint
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
+import com.intellij.openapi.components.service
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
@@ -13,7 +14,7 @@ import javax.swing.JComponent
 class YamllintConfigurable(
     private val project: Project
 ) : SearchableConfigurable {
-    private val settings = project.getService<YamllintSettingsProvider>()
+    private val settings = project.service<YamllintSettingsProvider>()
 
     private lateinit var enabledCheckbox: JCheckBox
     private lateinit var binPathField: TextFieldWithBrowseButton

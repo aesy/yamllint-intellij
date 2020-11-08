@@ -1,6 +1,7 @@
 package io.aesy.yamllint
 
 import com.intellij.openapi.application.WriteAction
+import com.intellij.openapi.components.service
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import org.jetbrains.yaml.psi.YAMLFile
 import org.junit.jupiter.api.BeforeEach
@@ -37,7 +38,7 @@ class YamllintExternalAnnotatorIntegrationTest : JUnit5PlatformTest() {
     private fun annotateFile(filePath: String): List<YamllintProblem> {
         val annotator = YamllintExternalAnnotator()
         val virtualFile = myFixture.copyFileToProject(filePath)
-        val settings = project.getService<YamllintSettingsProvider>()
+        val settings = project.service<YamllintSettingsProvider>()
         settings.state.enabled = true
 
         return WriteAction.computeAndWait<List<YamllintProblem>, Throwable> {

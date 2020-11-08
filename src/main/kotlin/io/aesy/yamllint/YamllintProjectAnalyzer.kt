@@ -2,6 +2,7 @@ package io.aesy.yamllint
 
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 
@@ -15,8 +16,8 @@ class YamllintProjectAnalyzer(
         private const val DEFAULT_CONFIG_PATH = ""
     }
 
-    private val executableFinder = project.getService<YamllintExecutableFinder>()
-    private val configurationFinder = project.getService<YamllintConfigurationFinder>()
+    private val executableFinder = project.service<YamllintExecutableFinder>()
+    private val configurationFinder = project.service<YamllintConfigurationFinder>()
 
     private var settings: YamllintSettings? = null
 

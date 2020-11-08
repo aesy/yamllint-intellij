@@ -3,6 +3,7 @@ package io.aesy.yamllint
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import java.io.File
 import java.io.IOException
@@ -19,9 +20,9 @@ class YamllintRunner(
         private val timeout = Duration.ofSeconds(30)
     }
 
-    private val executor = project.getService<CommandLineExecutor>()
-    private val parser = project.getService<YamllintOutputParser>()
-    private val settings = project.getService<YamllintSettingsProvider>()
+    private val executor = project.service<CommandLineExecutor>()
+    private val parser = project.service<YamllintOutputParser>()
+    private val settings = project.service<YamllintSettingsProvider>()
 
     @Throws(YamllintException::class)
     fun run(workDirectory: String = "", files: Array<String> = arrayOf(".")): List<YamllintProblem> {

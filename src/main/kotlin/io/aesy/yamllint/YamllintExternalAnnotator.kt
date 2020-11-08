@@ -3,6 +3,7 @@ package io.aesy.yamllint
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.ExternalAnnotator
 import com.intellij.lang.annotation.HighlightSeverity
+import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.progress.PerformInBackgroundOption
@@ -33,7 +34,7 @@ class YamllintExternalAnnotator : ExternalAnnotator<YAMLFile, List<YamllintProbl
 
     override fun doAnnotate(file: YAMLFile): List<YamllintProblem> {
         val project = file.project
-        val settings = project.getService<YamllintSettingsProvider>()
+        val settings = project.service<YamllintSettingsProvider>()
 
         if (!settings.state.enabled) {
             return emptyList()
@@ -73,7 +74,7 @@ class YamllintExternalAnnotator : ExternalAnnotator<YAMLFile, List<YamllintProbl
         val project = file.project
         val fileManager = FileDocumentManager.getInstance()
         val fileSystem = LocalFileSystem.getInstance()
-        val linter = project.getService<YamllintRunner>()
+        val linter = project.service<YamllintRunner>()
 
         try {
             if (fileManager.isFileModified(file.virtualFile)) {
