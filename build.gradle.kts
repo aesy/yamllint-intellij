@@ -20,6 +20,7 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
     testImplementation("io.strikt:strikt-core:0.26.1")
+    testImplementation("io.mockk:mockk:1.10.0")
 }
 
 intellij {

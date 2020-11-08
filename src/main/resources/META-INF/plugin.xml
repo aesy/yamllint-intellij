@@ -16,8 +16,6 @@
     <resource-bundle>messages.YamllintBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <projectService serviceImplementation="io.aesy.yamllint.YamllintSettingsProvider"/>
-
         <projectConfigurable
                 instance="io.aesy.yamllint.YamllintConfigurable"
                 groupId="tools"

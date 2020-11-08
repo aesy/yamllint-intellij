@@ -11,7 +11,7 @@ import strikt.assertions.isEqualTo
 import java.text.ParseException
 import java.util.stream.Stream
 
-class YamllintOutputParserTest {
+class YamllintOutputParserUnitTest : JUnit5PlatformTest() {
     @ParameterizedTest
     @DisplayName("It should return object representations of the given input")
     @MethodSource("provideValidInput")
@@ -43,6 +43,7 @@ class YamllintOutputParserTest {
         }
     }
 
+    @Suppress("unused")
     companion object {
         @JvmStatic
         fun provideWhitespace(): Stream<Arguments> {
@@ -55,15 +56,15 @@ class YamllintOutputParserTest {
 
         @JvmStatic
         fun provideValidInput(): Stream<Arguments> {
-            val problem1 = YamllintProblem("f1", 1, 2, YamllintProblem.Level.WARNING, "m1")
-            val problem2 = YamllintProblem("f2", 3, 4, YamllintProblem.Level.ERROR, "m2")
-            val problem3 = YamllintProblem("f", 1, 1, YamllintProblem.Level.ERROR, "message with ] bracket")
+            val problem1 = YamllintProblem("file1", 1, 2, YamllintProblem.Level.WARNING, "message1")
+            val problem2 = YamllintProblem("file2", 3, 4, YamllintProblem.Level.ERROR, "message2")
+            val problem3 = YamllintProblem("file", 1, 1, YamllintProblem.Level.ERROR, "message with ] bracket")
 
             return Stream.of(
-                Arguments.of("f1:1:2: [warning] m1", listOf(problem1)),
-                Arguments.of("f1:1:2: [warning] m1\n", listOf(problem1)),
-                Arguments.of("f1:1:2: [warning] m1\nf2:3:4: [error] m2", listOf(problem1, problem2)),
-                Arguments.of("f:1:1: [error] message with ] bracket", listOf(problem3))
+                Arguments.of("file1:1:2: [warning] message1", listOf(problem1)),
+                Arguments.of("file1:1:2: [warning] message1\n", listOf(problem1)),
+                Arguments.of("file1:1:2: [warning] message1\nfile2:3:4: [error] message2", listOf(problem1, problem2)),
+                Arguments.of("file:1:1: [error] message with ] bracket", listOf(problem3))
             )
         }
 

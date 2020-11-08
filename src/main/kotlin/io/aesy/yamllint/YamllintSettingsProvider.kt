@@ -4,7 +4,10 @@ import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 
 @Service
-@State(name = "YamllintSettings", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)])
+@State(
+    name = "YamllintSettings",
+    storages = [Storage(StoragePathMacros.WORKSPACE_FILE, roamingType = RoamingType.DISABLED)]
+)
 class YamllintSettingsProvider(
     project: Project
 ) : PersistentStateComponent<YamllintSettings> {
