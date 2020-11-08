@@ -32,6 +32,13 @@ class YamllintExternalAnnotator : ExternalAnnotator<YAMLFile, List<YamllintProbl
     }
 
     override fun doAnnotate(file: YAMLFile): List<YamllintProblem> {
+        val project = file.project
+        val settings = project.getService<YamllintSettingsProvider>()
+
+        if (!settings.state.enabled) {
+            return emptyList()
+        }
+
         val progressManager = ProgressManager.getInstance()
         val computable = Computable { lintFile(file) }
         val indicator = createIndicator(file)
@@ -71,22 +78,22 @@ class YamllintExternalAnnotator : ExternalAnnotator<YAMLFile, List<YamllintProbl
         try {
             if (fileManager.isFileModified(file.virtualFile)) {
                 // We can't lint the file itself if there are changes in memory
-                return linter.run(null, file.text)
+                return linter.run(file.text)
             }
 
             // basePath may be null in default project
             val basePath = project.basePath
-                ?: return linter.run(null, file.text)
+                ?: return linter.run(file.text)
 
             // file may be null, unclear when
             val workspace = fileSystem.findFileByPath(basePath)
-                ?: return linter.run(null, file.text)
+                ?: return linter.run(file.text)
 
             // relative path may be null if editing a fragment
             val relativePath = VfsUtil.getRelativePath(file.virtualFile, workspace)
-                ?: return linter.run(null, file.text)
+                ?: return linter.run(file.text)
 
-            return linter.run(null, workspace.path, arrayOf(relativePath))
+            return linter.run(workspace.path, arrayOf(relativePath))
         } catch (e: YamllintException) {
             YamllintNotifications.error("Failed to execute yamllint\n$e\n${e.cause}").notify(project)
 

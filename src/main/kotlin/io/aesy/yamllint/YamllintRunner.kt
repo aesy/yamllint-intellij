@@ -21,24 +21,18 @@ class YamllintRunner(
 
     private val executor = project.getService<CommandLineExecutor>()
     private val parser = project.getService<YamllintOutputParser>()
+    private val settings = project.getService<YamllintSettingsProvider>()
 
     @Throws(YamllintException::class)
-    fun run(
-        configPath: String? = null,
-        workDirectory: String = "",
-        files: Array<String> = arrayOf(".")
-    ): List<YamllintProblem> {
-        return createCommand(configPath)
+    fun run(workDirectory: String = "", files: Array<String> = arrayOf(".")): List<YamllintProblem> {
+        return createCommand()
             .withParameters(*files)
             .withWorkDirectory(workDirectory)
             .execute()
     }
 
     @Throws(YamllintException::class)
-    fun run(
-        configPath: String? = null,
-        content: String
-    ): List<YamllintProblem> {
+    fun run(content: String): List<YamllintProblem> {
         val tempFile = try {
             File.createTempFile("yamllint-intellij-input-", ".yaml").apply {
                 writeText(content)
@@ -48,7 +42,7 @@ class YamllintRunner(
         }
 
         return try {
-            createCommand(configPath)
+            createCommand()
                 .withParameters("-")
                 .withInput(tempFile)
                 .execute()
@@ -59,14 +53,14 @@ class YamllintRunner(
         }
     }
 
-    private fun createCommand(configPath: String?): GeneralCommandLine {
+    private fun createCommand(): GeneralCommandLine {
         val command = GeneralCommandLine()
             .withCharset(StandardCharsets.UTF_8)
-            .withExePath("yamllint")
+            .withExePath(settings.state.binPath)
             .withParameters("--format", "parsable")
 
-        if (!configPath.isNullOrBlank()) {
-            command.addParameters("--config", configPath)
+        if (!settings.state.configPath.isBlank()) {
+            command.addParameters("--config-file", settings.state.configPath)
         }
 
         return command
@@ -82,21 +76,22 @@ class YamllintRunner(
 
         val successExitCodes = (0..2).toList()
 
-        if (output.exitCode in successExitCodes) {
-            logger.debug("Yamllint output: ${output.stdout}")
-
-            try {
-                return parser.parse(output.stdout)
-            } catch (e: ParseException) {
-                throw YamllintException("Could not parse output", e)
-            }
+        if (output.exitCode !in successExitCodes) {
+            logger.debug("Yamllint error output: ${output.stderr}")
+            throw YamllintException("Expected exit code to be one of $successExitCodes but was ${output.exitCode}\n${output.stderr}")
         }
 
-        logger.debug("Yamllint error output: ${output.stderr}")
+        if (!output.stderr.isBlank()) {
+            logger.debug("Yamllint error output: ${output.stderr}")
+            throw YamllintException("An unexpected error occurred:\n${output.stderr}")
+        }
 
-        println(output.stdout)
-        println(output.stderr)
+        logger.debug("Yamllint output: ${output.stdout}")
 
-        throw YamllintException("Expected exit code to be one of $successExitCodes but was ${output.exitCode}")
+        try {
+            return parser.parse(output.stdout)
+        } catch (e: ParseException) {
+            throw YamllintException("Could not parse output", e)
+        }
     }
 }
