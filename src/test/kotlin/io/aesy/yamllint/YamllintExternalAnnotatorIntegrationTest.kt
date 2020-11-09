@@ -5,13 +5,14 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import org.jetbrains.yaml.psi.YAMLFile
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEmpty
 import strikt.assertions.isNotEmpty
 
-// Note: This test requires Yamllint to be accessible on the host to pass
+@Disabled("This test requires Yamllint to be accessible on the host to pass")
 class YamllintExternalAnnotatorIntegrationTest : JUnit5PlatformTest() {
     @BeforeEach
     fun setup() {
