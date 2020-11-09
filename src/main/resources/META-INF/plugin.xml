@@ -6,6 +6,9 @@
     <category>Inspection</category>
 
     <description><![CDATA[
+        <html>
+        <p>Adds Yamllint integration to provide code inspection of yaml files.</p>
+        </html>
      ]]></description>
 
     <idea-version since-build="201.6668.113"/>
