@@ -51,11 +51,11 @@ class YamllintConfigurable(
         confPathField = TextFieldWithBrowseButton()
         val descriptor = FileChooserDescriptor(true, false, false, false, false, false)
         val title = YamllintBundle.message("settings.yaml.linters.yamllint.configurable.name")
-        val binDescription = YamllintBundle.message("settings.yaml.linters.yamllint.configurable.binpath-description")
-        val confDescription = YamllintBundle.message("settings.yaml.linters.yamllint.configurable.confpath-description")
+        val binDescription = YamllintBundle.message("settings.yaml.linters.yamllint.configurable.confpath-description")
+        val confDescription = YamllintBundle.message("settings.yaml.linters.yamllint.configurable.binpath-description")
 
         binPathField.addBrowseFolderListener(title, binDescription, project, descriptor)
-        confPathField.addBrowseFolderListener(title, binDescription, project, descriptor)
+        confPathField.addBrowseFolderListener(title, confDescription, project, descriptor)
 
         return FormBuilder.createFormBuilder()
             .addLabeledComponent("Enabled", enabledCheckbox)
