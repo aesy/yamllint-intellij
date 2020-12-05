@@ -7,9 +7,23 @@
 
     <description><![CDATA[
         <html>
-        <p>Adds Yamllint integration to provide code inspection of yaml files.</p>
+          <p>
+            Provides static code analysis of Yaml files through integration with
+            <a href="https://yamllint.readthedocs.io">Yamllint</a>
+          </p>
+          <br>
+          <img src="https://raw.githubusercontent.com/aesy/yamllint-intellij/master/img/usage.png">
         </html>
      ]]></description>
+
+    <change-notes><![CDATA[
+        <html>
+        <b>Changes in version 0.1:</b>
+        <ul>
+          <li>Initial release</li>
+        </ul>
+        </html>
+    ]]></change-notes>
 
     <idea-version since-build="201.6668.113"/>
 
