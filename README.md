@@ -1,3 +1,5 @@
+<img align="left" width="80" height="80" src="./src/main/resources/META-INF/pluginIcon.svg">
+
 # Yamllint support for IntelliJ-based IDEs
 
 A plugin providing static code analysis of Yaml files through integration with [Yamllint](https://yamllint.readthedocs.io).
