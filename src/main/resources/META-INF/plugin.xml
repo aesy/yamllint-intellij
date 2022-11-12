@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>io.aesy.yamllint</id>
     <name>Yamllint</name>
-    <version>0.1</version>
+    <version>0.2</version>
     <vendor email="isak.wertwein@gmail.com" url="https://github.com/aesy/yamllint-intellij">Isak Wertwein</vendor>
     <category>Inspection</category>
 
@@ -18,6 +18,10 @@
 
     <change-notes><![CDATA[
         <html>
+        <b>Changes in version 0.2:</b>
+        <ul>
+          <li>Fix FileNotFoundError when `ignore-from-file` setting is used.</li>
+        </ul>
         <b>Changes in version 0.1:</b>
         <ul>
           <li>Initial release</li>
