@@ -25,7 +25,7 @@ class YamllintRunner(
     private val settings = project.service<YamllintSettingsProvider>()
 
     @Throws(YamllintException::class)
-    fun run(workDirectory: String = "", files: Array<String> = arrayOf(".")): List<YamllintProblem> {
+    fun run(files: Array<String> = arrayOf("."), workDirectory: String = ""): List<YamllintProblem> {
         return createCommand()
             .withParameters(*files)
             .withWorkDirectory(workDirectory)
@@ -33,7 +33,7 @@ class YamllintRunner(
     }
 
     @Throws(YamllintException::class)
-    fun run(content: String): List<YamllintProblem> {
+    fun run(content: String, workDirectory: String = ""): List<YamllintProblem> {
         val tempFile = try {
             File.createTempFile("yamllint-intellij-input-", ".yaml").apply {
                 writeText(content)
@@ -46,6 +46,7 @@ class YamllintRunner(
             createCommand()
                 .withParameters("-")
                 .withInput(tempFile)
+                .withWorkDirectory(workDirectory)
                 .execute()
         } finally {
             if (!tempFile.delete()) {
@@ -60,7 +61,7 @@ class YamllintRunner(
             .withExePath(settings.state.binPath)
             .withParameters("--format", "parsable")
 
-        if (!settings.state.configPath.isBlank()) {
+        if (settings.state.configPath.isNotBlank()) {
             command.addParameters("--config-file", settings.state.configPath)
         }
 
@@ -82,7 +83,7 @@ class YamllintRunner(
             throw YamllintException("Expected exit code to be one of $successExitCodes but was ${output.exitCode}\n${output.stderr}")
         }
 
-        if (!output.stderr.isBlank()) {
+        if (output.stderr.isNotBlank()) {
             logger.debug("Yamllint error output: ${output.stderr}")
             throw YamllintException("An unexpected error occurred:\n${output.stderr}")
         }

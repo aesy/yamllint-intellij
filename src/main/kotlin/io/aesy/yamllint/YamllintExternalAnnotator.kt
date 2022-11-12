@@ -1,12 +1,9 @@
 package io.aesy.yamllint
 
-import com.intellij.lang.annotation.AnnotationHolder
-import com.intellij.lang.annotation.ExternalAnnotator
-import com.intellij.lang.annotation.HighlightSeverity
+import com.intellij.lang.annotation.*
 import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.progress.PerformInBackgroundOption
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.impl.BackgroundableProcessIndicator
@@ -77,11 +74,6 @@ class YamllintExternalAnnotator : ExternalAnnotator<YAMLFile, List<YamllintProbl
         val linter = project.service<YamllintRunner>()
 
         try {
-            if (fileManager.isFileModified(file.virtualFile)) {
-                // We can't lint the file itself if there are changes in memory
-                return linter.run(file.text)
-            }
-
             // basePath may be null in default project
             val basePath = project.basePath
                 ?: return linter.run(file.text)
@@ -90,11 +82,16 @@ class YamllintExternalAnnotator : ExternalAnnotator<YAMLFile, List<YamllintProbl
             val workspace = fileSystem.findFileByPath(basePath)
                 ?: return linter.run(file.text)
 
+            if (fileManager.isFileModified(file.virtualFile)) {
+                // We can't lint the file itself if there are changes in memory
+                return linter.run(file.text, workspace.path)
+            }
+
             // relative path may be null if editing a fragment
             val relativePath = VfsUtil.getRelativePath(file.virtualFile, workspace)
-                ?: return linter.run(file.text)
+                ?: return linter.run(file.text, workspace.path)
 
-            return linter.run(workspace.path, arrayOf(relativePath))
+            return linter.run(arrayOf(relativePath), workspace.path)
         } catch (e: YamllintException) {
             YamllintNotifications.error("Failed to execute yamllint\n$e\n${e.cause}").notify(project)
 
@@ -106,7 +103,6 @@ class YamllintExternalAnnotator : ExternalAnnotator<YAMLFile, List<YamllintProbl
         return BackgroundableProcessIndicator(
             file.project,
             "Yamllint: Analyzing ${file.name}...",
-            PerformInBackgroundOption.ALWAYS_BACKGROUND,
             "Stop",
             "Stop file analysis",
             false
