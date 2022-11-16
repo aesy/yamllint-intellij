@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     jacoco
-    kotlin("jvm") version "1.6.10"
-    id("org.jetbrains.intellij") version "1.4.0"
+    kotlin("jvm") version "1.6.21"
+    id("org.jetbrains.intellij") version "1.9.0"
 }
 
 group = "io.aesy.yamllint"
@@ -18,14 +18,14 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
     testImplementation("io.strikt:strikt-core:0.34.1")
-    testImplementation("io.mockk:mockk:1.12.3")
+    testImplementation("io.mockk:mockk:1.13.2")
 }
 
 intellij {
     pluginName.set(rootProject.name)
-    version.set("IC-2021.3.2")
+    version.set("IC-2022.1.1")
     updateSinceUntilBuild.set(false)
     plugins.set(listOf("org.jetbrains.plugins.yaml"))
 }
@@ -38,13 +38,10 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "7.4"
+        gradleVersion = "7.5"
     }
 
     withType<KotlinCompile> {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
-
         kotlinOptions {
             jvmTarget = "11"
         }
