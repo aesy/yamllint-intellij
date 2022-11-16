@@ -3,15 +3,12 @@ package io.aesy.yamllint
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
-import strikt.assertions.isEqualTo
-import strikt.assertions.isFalse
-import strikt.assertions.isTrue
+import strikt.assertions.*
 
 class YamllintProjectAnalyzerUnitTest : JUnit5PlatformTest() {
     @Test
@@ -20,13 +17,13 @@ class YamllintProjectAnalyzerUnitTest : JUnit5PlatformTest() {
         @MockK project: Project,
         @MockK binFinder: YamllintExecutableFinder,
         @MockK confFinder: YamllintConfigurationFinder,
-        @MockK conf: PsiFile
+        @MockK conf: VirtualFile
     ) {
         every { project.service<YamllintExecutableFinder>() } returns binFinder
         every { project.service<YamllintConfigurationFinder>() } returns confFinder
         every { binFinder.find() } returns null
         every { confFinder.find() } returns conf
-        every { conf.virtualFile.path } returns ".yamllint"
+        every { conf.path } returns ".yamllint"
 
         val analyzer = YamllintProjectAnalyzer(project)
         val settings = analyzer.getSuggestedSettings()
@@ -40,13 +37,13 @@ class YamllintProjectAnalyzerUnitTest : JUnit5PlatformTest() {
         @MockK project: Project,
         @MockK binFinder: YamllintExecutableFinder,
         @MockK confFinder: YamllintConfigurationFinder,
-        @MockK conf: PsiFile
+        @MockK conf: VirtualFile
     ) {
         every { project.service<YamllintExecutableFinder>() } returns binFinder
         every { project.service<YamllintConfigurationFinder>() } returns confFinder
         every { binFinder.find() } returns null
         every { confFinder.find() } returns conf
-        every { conf.virtualFile.path } returns ".yamllint"
+        every { conf.path } returns ".yamllint"
 
         val analyzer = YamllintProjectAnalyzer(project)
         val settings = analyzer.getSuggestedSettings()

@@ -1,7 +1,7 @@
 package io.aesy.yamllint
 
 import com.intellij.openapi.application.WriteAction
-import com.intellij.psi.PsiFile
+import com.intellij.openapi.vfs.VirtualFile
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -18,7 +18,7 @@ class YamllintConfigurationFinderUnitTest : JUnit5PlatformTest() {
         myFixture.copyFileToProject(".yamllint", fileName)
 
         val finder = YamllintConfigurationFinder(project)
-        val config = WriteAction.computeAndWait<PsiFile?, Throwable> { finder.find() }
+        val config = WriteAction.computeAndWait<VirtualFile?, Throwable> { finder.find() }
 
         expectThat(config).isNotNull()
     }
@@ -27,7 +27,7 @@ class YamllintConfigurationFinderUnitTest : JUnit5PlatformTest() {
     @DisplayName("It should return null if no Yamllint configuration exists")
     fun testYamllintConfigNotFound() {
         val finder = YamllintConfigurationFinder(project)
-        val config = WriteAction.computeAndWait<PsiFile?, Throwable> { finder.find() }
+        val config = WriteAction.computeAndWait<VirtualFile?, Throwable> { finder.find() }
 
         expectThat(config).isNull()
     }

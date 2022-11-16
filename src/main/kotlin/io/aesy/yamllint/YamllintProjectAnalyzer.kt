@@ -40,7 +40,7 @@ class YamllintProjectAnalyzer(
         }
 
         logger.debug("Searching for yamllint configuration...")
-        val configuration = ReadAction.compute<VirtualFile, Throwable> { configurationFinder.find()?.virtualFile }
+        val configuration = ReadAction.compute<VirtualFile, Throwable> { configurationFinder.find() }
         val configPath = configuration?.path ?: DEFAULT_CONFIG_PATH
 
         if (configuration == null) {
