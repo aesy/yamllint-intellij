@@ -7,7 +7,7 @@ A plugin providing static code analysis of Yaml files through integration with [
 [![Plugin repository](https://img.shields.io/jetbrains/plugin/v/15349-yamllint?label=plugin%20repository&style=flat-square)](https://plugins.jetbrains.com/plugin/15349-yamllint/versions)
 [![Plugin downloads](https://img.shields.io/jetbrains/plugin/d/15349-yamllint?style=flat-square)](https://plugins.jetbrains.com/plugin/15349-yamllint)
 [![Plugin stars](https://img.shields.io/jetbrains/plugin/r/stars/15349-yamllint?style=flat-square)](https://plugins.jetbrains.com/plugin/15349-yamllint/reviews)
-[![Build status](https://img.shields.io/github/workflow/status/aesy/yamllint-intellij/Continuous%20Integration?style=flat-square)](https://github.com/aesy/yamllint-intellij/actions)
+[![Build status](https://img.shields.io/github/actions/workflow/status/aesy/yamllint-intellij/ci.yml?branch=master&style=flat-square)](https://github.com/aesy/yamllint-intellij/actions)
 [![Test coverage](https://img.shields.io/codecov/c/github/aesy/yamllint-intellij?style=flat-square)](https://codecov.io/github/aesy/yamllint-intellij)
 [![MIT license](https://img.shields.io/github/license/aesy/yamllint-intellij.svg?style=flat-square)](https://github.com/aesy/yamllint-intellij/blob/master/LICENSE)
 
