@@ -1,29 +1,24 @@
-package io.aesy.yamllint
+package io.aesy.yamllint.startup
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
+import io.aesy.yamllint.runner.CommandLineExecutor.execute
+import io.aesy.yamllint.util.getLogger
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.time.Duration
 
-@Service
-class YamllintExecutableFinder(
-    project: Project
-) {
+class YamllintPathExecutableProvider: YamllintExecutableProvider {
     companion object {
         private val logger = getLogger()
         private val timeout = Duration.ofSeconds(1)
     }
 
-    private val executor = project.service<CommandLineExecutor>()
-
-    fun find(): VirtualFile? {
+    override fun find(project: Project): VirtualFile? {
         val command = GeneralCommandLine()
         command.charset = StandardCharsets.UTF_8
 
@@ -36,7 +31,7 @@ class YamllintExecutableFinder(
         command.addParameter("yamllint")
 
         val output = try {
-            executor.execute(command, timeout)
+            command.execute(timeout)
         } catch (e: ExecutionException) {
             logger.warn("Failed to find yamllint executable: Failed to execute command", e)
             return null
