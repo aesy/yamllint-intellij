@@ -1,4 +1,4 @@
-package io.aesy.yamllint
+package io.aesy.yamllint.util
 
 import com.intellij.notification.*
 

@@ -17,9 +17,11 @@ Download and install the plugin through your IDE or through [the marketplace](ht
 
 ## Usage
 
-Install Yamllint according to the [documentation](https://yamllint.readthedocs.io/en/stable/quickstart.html#installing-yamllint) and make sure it's in your PATH.
+Install Yamllint according to the [documentation](https://yamllint.readthedocs.io/en/stable/quickstart.html#installing-yamllint) 
+and make sure it's in your PATH or as a package in your projects' SDK, such as virtualenv.
 
-In your IDE, go to `Settings > Tools > Yamllint` and enable the plugin. The plugin will search for a binary and configuration file to try to populate the settings - adjust them if they are incorrect. Leave the configuration path empty to use the default settings. 
+After opening a YAML file and if the project is applicable you'll be asked if you want to enable to plugin. If not, 
+go to `Settings > Tools > Yamllint` to configure the plugin.
 
 ![](./img/settings.png)
 
@@ -31,8 +33,8 @@ Open a Yaml file, warnings and errors should be displayed inline according to yo
 
 #### Prerequisites
 
-* [Gradle 5.2+](https://gradle.org/)
-* [A Java 8+ Runtime](https://adoptopenjdk.net/)
+* [Gradle 7.5+](https://gradle.org/)
+* [A Java 11+ Runtime](https://adoptopenjdk.net/)
 
 #### Build
 

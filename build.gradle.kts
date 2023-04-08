@@ -1,9 +1,11 @@
+import org.jetbrains.intellij.tasks.PublishPluginTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     jacoco
-    kotlin("jvm") version "1.6.21"
-    id("org.jetbrains.intellij") version "1.9.0"
+    id("java")
+    id("org.jetbrains.intellij") version "1.13.3"
+    kotlin("jvm") version "1.8.20"
 }
 
 group = "io.aesy.yamllint"
@@ -14,20 +16,23 @@ repositories {
     mavenLocal()
 }
 
-dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-    implementation(kotlin("reflect"))
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+}
 
+dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
     testImplementation("io.strikt:strikt-core:0.34.1")
-    testImplementation("io.mockk:mockk:1.13.2")
+    testImplementation("io.mockk:mockk:1.13.4")
+    implementation(kotlin("stdlib-jdk8"))
+    implementation(kotlin("reflect"))
 }
 
 intellij {
     pluginName.set(rootProject.name)
     version.set("IC-2022.1.1")
     updateSinceUntilBuild.set(false)
-    plugins.set(listOf("org.jetbrains.plugins.yaml"))
+    plugins.set(listOf("org.jetbrains.plugins.yaml", "PythonCore:221.5591.52"))
 }
 
 tasks {
@@ -50,5 +55,9 @@ tasks {
     withType<Test> {
         useJUnitPlatform()
         finalizedBy(jacocoTestReport)
+    }
+
+    withType<PublishPluginTask> {
+        token.set(System.getenv("INTELLIJ_HUB_TOKEN"))
     }
 }

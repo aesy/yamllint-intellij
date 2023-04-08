@@ -1,28 +1,24 @@
-package io.aesy.yamllint
+package io.aesy.yamllint.runner
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.*
-import com.intellij.openapi.components.Service
 import com.intellij.openapi.util.Key
+import io.aesy.yamllint.util.getLogger
 import java.time.Duration
 
-@Service
-class CommandLineExecutor {
-    companion object {
-        private val logger = getLogger()
-    }
+object CommandLineExecutor {
+    private val logger = getLogger()
 
     @Throws(ExecutionException::class)
-    fun execute(commandLine: GeneralCommandLine, timeout: Duration? = null): ProcessOutput {
-        val command = commandLine.commandLineString
-        val process = commandLine.createProcess()
-        val handler = OSProcessHandler(process, command, Charsets.UTF_8)
+    fun GeneralCommandLine.execute(timeout: Duration? = null): ProcessOutput {
+        val process = createProcess()
+        val handler = OSProcessHandler(process, commandLineString, Charsets.UTF_8)
         val output = ProcessOutput()
 
-        logger.debug("Executing command: $command")
+        logger.debug("Executing command: $commandLineString")
 
-        handler.addProcessListener(object : ProcessAdapter() {
+        handler.addProcessListener(object: ProcessAdapter() {
             override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
                 when (outputType) {
                     ProcessOutputType.STDERR -> output.appendStderr(event.text)

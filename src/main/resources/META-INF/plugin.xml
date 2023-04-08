@@ -30,22 +30,38 @@
         </html>
     ]]></change-notes>
 
-    <idea-version since-build="212.4746.92"/>
+    <idea-version since-build="221.5080.210" />
 
     <depends>com.intellij.modules.lang</depends>
+    <depends optional="true" config-file="plugin-withPython.xml">com.intellij.modules.python</depends>
     <depends>org.jetbrains.plugins.yaml</depends>
 
     <resource-bundle>messages.YamllintBundle</resource-bundle>
 
+    <extensionPoints>
+        <extensionPoint
+                name="yamllintExecutableProvider"
+                interface="io.aesy.yamllint.startup.YamllintExecutableProvider"
+                dynamic="true" />
+    </extensionPoints>
+
     <extensions defaultExtensionNs="com.intellij">
+        <editorNotificationProvider implementation="io.aesy.yamllint.startup.YamllintActivationNotificationProvider" />
         <notificationGroup id="Yamllint" displayType="BALLOON" />
         <projectConfigurable
-                instance="io.aesy.yamllint.YamllintConfigurable"
+                instance="io.aesy.yamllint.settings.YamllintConfigurable"
                 groupId="tools"
                 key="settings.yaml.linters.yamllint.configurable.name"
-                bundle="messages.YamllintBundle"/>
+                bundle="messages.YamllintBundle" />
         <externalAnnotator
                 language="yaml"
-                implementationClass="io.aesy.yamllint.YamllintExternalAnnotator"/>
+                implementationClass="io.aesy.yamllint.runner.YamllintExternalAnnotator" />
+        <projectService serviceImplementation="io.aesy.yamllint.runner.YamllintRunner" />
+        <projectService serviceImplementation="io.aesy.yamllint.settings.YamllintSettings" />
+        <applicationService serviceImplementation="io.aesy.yamllint.settings.YamllintCache" />
+    </extensions>
+
+    <extensions defaultExtensionNs="io.aesy.yamllint">
+        <yamllintExecutableProvider implementationClass="io.aesy.yamllint.startup.YamllintPathExecutableProvider" />
     </extensions>
 </idea-plugin>
