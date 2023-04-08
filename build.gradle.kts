@@ -2,9 +2,9 @@ import org.jetbrains.intellij.tasks.PublishPluginTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    jacoco
     id("java")
     id("org.jetbrains.intellij") version "1.13.3"
+    id("org.jetbrains.kotlinx.kover") version "0.6.1"
     kotlin("jvm") version "1.8.20"
 }
 
@@ -21,7 +21,8 @@ java {
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
+    testImplementation(platform("org.junit:junit-bom:5.9.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("io.strikt:strikt-core:0.34.1")
     testImplementation("io.mockk:mockk:1.13.4")
     implementation(kotlin("stdlib-jdk8"))
@@ -36,10 +37,8 @@ intellij {
 }
 
 tasks {
-    jacocoTestReport {
-        reports {
-            xml.required.set(true)
-        }
+    koverReport {
+        dependsOn(withType<Test>())
     }
 
     withType<Wrapper> {
@@ -54,7 +53,7 @@ tasks {
 
     withType<Test> {
         useJUnitPlatform()
-        finalizedBy(jacocoTestReport)
+        finalizedBy(koverReport)
     }
 
     withType<PublishPluginTask> {
