@@ -18,7 +18,7 @@ class SuppressLineIntention(
         YamllintBundle.message("intention.yaml.linters.yamllint.suppress-line.family-name")
 
     override fun getText(): String =
-        YamllintBundle.message("intention.yaml.linters.yamllint.suppress-line.text", problem.line)
+        YamllintBundle.message("intention.yaml.linters.yamllint.suppress-line.text", problem.rule)
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
         if (editor == null || file == null) {

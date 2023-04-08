@@ -44,11 +44,16 @@ class YamllintExternalAnnotator: ExternalAnnotator<YAMLFile, List<YamllintProble
     }
 
     override fun apply(file: PsiFile, problems: List<YamllintProblem>, holder: AnnotationHolder) {
+        val settings = file.project.service<YamllintSettings>()
         val documentManager = PsiDocumentManager.getInstance(file.project)
         val document = documentManager.getDocument(file) ?: return
 
         for (problem in problems) {
             var (_, line, column, level, message, rule) = problem
+
+            if (settings.disabledRules.contains(rule)) {
+                continue
+            }
 
             if (line >= document.lineCount) {
                 line = document.lineCount - 1
