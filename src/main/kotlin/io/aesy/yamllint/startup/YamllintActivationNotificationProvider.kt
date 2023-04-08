@@ -9,7 +9,6 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.*
-import com.intellij.ui.EditorNotificationProvider.CONST_NULL
 import io.aesy.yamllint.settings.YamllintCache
 import io.aesy.yamllint.settings.YamllintSettings
 import io.aesy.yamllint.util.YamllintBundle
@@ -30,17 +29,17 @@ class YamllintActivationNotificationProvider: EditorNotificationProvider, DumbAw
         file: VirtualFile
     ): Function<in FileEditor, out JComponent?> {
         if (file.fileType !== YAMLFileType.YML) {
-            return CONST_NULL
+            return Function { null }
         }
 
         if (PropertiesComponent.getInstance(project).getBoolean(DONT_ASK_AGAIN_KEY)) {
-            return CONST_NULL
+            return Function { null }
         }
 
         val settings = project.service<YamllintSettings>()
 
         if (settings.state.enabled && settings.state.binPath.isNotEmpty()) {
-            return CONST_NULL
+            return Function { null }
         }
 
         val cache = YamllintCache.getInstance()
@@ -65,7 +64,7 @@ class YamllintActivationNotificationProvider: EditorNotificationProvider, DumbAw
                 }
             }
 
-            return CONST_NULL
+            return Function { null }
         }
 
         val binPath = executables.first()
