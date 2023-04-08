@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>io.aesy.yamllint</id>
     <name>Yamllint</name>
-    <version>0.2</version>
+    <version>0.3</version>
     <vendor email="isak.wertwein@gmail.com" url="https://github.com/aesy/yamllint-intellij">Isak Wertwein</vendor>
     <category>Inspection</category>
 
@@ -9,15 +9,23 @@
         <html>
           <p>
             Provides static code analysis of Yaml files through integration with
-            <a href="https://yamllint.readthedocs.io">Yamllint</a>
+            <a href="https://yamllint.readthedocs.io">Yamllint</a>.
           </p>
-          <br>
+          <p>
+            Enable and configure it in the <code>Preferences</code> &gt; <code>Tools</code> &gt; <code>Yamllint</code>.
+          </p>
           <img src="https://raw.githubusercontent.com/aesy/yamllint-intellij/master/img/usage.png">
         </html>
      ]]></description>
 
     <change-notes><![CDATA[
         <html>
+        <b>Changes in version 0.3:</b>
+        <ul>
+          <li>Add notification suggesting to enable plugin if applicable to project.</li>
+          <li>Add ability to detect executable in virtualenv.</li>
+          <li>Add intentions to disable plugin or individual rules/lines.</li>
+        </ul>
         <b>Changes in version 0.2:</b>
         <ul>
           <li>Fix FileNotFoundError when `ignore-from-file` setting is used.</li>

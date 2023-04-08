@@ -1,14 +1,11 @@
-package io.aesy.yamllint
+package io.aesy.yamllint.runner
 
-import com.intellij.openapi.components.Service
 import com.intellij.util.LineSeparator
 import java.text.ParseException
 
-@Service
-class YamllintOutputParser {
-    companion object {
-        private val pattern = Regex("(?<file>.+?):(?<line>\\d+):(?<column>\\d+): \\[(?<level>.+?)] (?<message>.+)")
-    }
+object YamllintOutputParser {
+    private val pattern =
+        Regex("^(?<file>.+?):(?<line>\\d+):(?<column>\\d+): \\[(?<level>.+?)] (?<message>.+) \\((?<rule>.+)\\)$")
 
     @Throws(ParseException::class)
     fun parse(input: String): List<YamllintProblem> {
@@ -21,14 +18,15 @@ class YamllintOutputParser {
     @Throws(ParseException::class)
     private fun parseLine(line: Int, text: String): YamllintProblem {
         val result = pattern.matchEntire(text)
-            ?: throw ParseException("Line $line doesn't match excepected pattern", -1)
+            ?: throw ParseException("Line $line doesn't match excepted pattern", -1)
 
         return YamllintProblem(
             file = result.getString("file"),
-            line = result.getInt("line"),
-            column = result.getInt("column"),
+            line = result.getInt("line") - 1,
+            column = result.getInt("column") - 1,
             level = result.getLevel("level"),
-            message = result.getString("message")
+            message = result.getString("message"),
+            rule = result.getString("rule"),
         )
     }
 

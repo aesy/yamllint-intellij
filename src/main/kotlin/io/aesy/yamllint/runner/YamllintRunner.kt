@@ -1,17 +1,20 @@
-package io.aesy.yamllint
+package io.aesy.yamllint.runner
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
+import io.aesy.yamllint.*
+import io.aesy.yamllint.runner.CommandLineExecutor.execute
+import io.aesy.yamllint.settings.YamllintSettings
+import io.aesy.yamllint.util.getLogger
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.text.ParseException
 import java.time.Duration
 
-@Service
 class YamllintRunner(
     project: Project
 ) {
@@ -20,10 +23,9 @@ class YamllintRunner(
         private val timeout = Duration.ofSeconds(30)
     }
 
-    private val executor = project.service<CommandLineExecutor>()
-    private val parser = project.service<YamllintOutputParser>()
-    private val settings = project.service<YamllintSettingsProvider>()
+    private val settings = project.service<YamllintSettings>()
 
+    @RequiresBackgroundThread
     @Throws(YamllintException::class)
     fun run(files: Array<String> = arrayOf("."), workDirectory: String = ""): List<YamllintProblem> {
         return createCommand()
@@ -32,6 +34,7 @@ class YamllintRunner(
             .execute()
     }
 
+    @RequiresBackgroundThread
     @Throws(YamllintException::class)
     fun run(content: String, workDirectory: String = ""): List<YamllintProblem> {
         val tempFile = try {
@@ -71,7 +74,7 @@ class YamllintRunner(
     @Throws(YamllintException::class)
     private fun GeneralCommandLine.execute(): List<YamllintProblem> {
         val output = try {
-            executor.execute(this, timeout)
+            execute(timeout)
         } catch (e: ExecutionException) {
             throw YamllintException("Failed to execute command", e)
         }
@@ -91,7 +94,7 @@ class YamllintRunner(
         logger.debug("Yamllint output: ${output.stdout}")
 
         try {
-            return parser.parse(output.stdout)
+            return YamllintOutputParser.parse(output.stdout)
         } catch (e: ParseException) {
             throw YamllintException("Could not parse output", e)
         }

@@ -1,8 +1,7 @@
-package io.aesy.yamllint
+package io.aesy.yamllint.runner
 
 import com.intellij.lang.annotation.*
 import com.intellij.openapi.components.service
-import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -13,30 +12,30 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import io.aesy.yamllint.YamllintException
+import io.aesy.yamllint.intention.*
+import io.aesy.yamllint.settings.YamllintSettings
+import io.aesy.yamllint.util.YamllintBundle
+import io.aesy.yamllint.util.YamllintNotifications
 import org.jetbrains.yaml.psi.YAMLFile
 import kotlin.math.min
 
-class YamllintExternalAnnotator : ExternalAnnotator<YAMLFile, List<YamllintProblem>>() {
+class YamllintExternalAnnotator: ExternalAnnotator<YAMLFile, List<YamllintProblem>>() {
     override fun collectInformation(file: PsiFile): YAMLFile? {
         if (file !is YAMLFile) {
+            return null
+        }
+
+        val settings = file.project.service<YamllintSettings>()
+
+        if (!settings.enabled) {
             return null
         }
 
         return file
     }
 
-    override fun collectInformation(file: PsiFile, editor: Editor, hasErrors: Boolean): YAMLFile? {
-        return collectInformation(file)
-    }
-
     override fun doAnnotate(file: YAMLFile): List<YamllintProblem> {
-        val project = file.project
-        val settings = project.service<YamllintSettingsProvider>()
-
-        if (!settings.state.enabled) {
-            return emptyList()
-        }
-
         val progressManager = ProgressManager.getInstance()
         val computable = Computable { lintFile(file) }
         val indicator = createIndicator(file)
@@ -48,15 +47,22 @@ class YamllintExternalAnnotator : ExternalAnnotator<YAMLFile, List<YamllintProbl
         val documentManager = PsiDocumentManager.getInstance(file.project)
         val document = documentManager.getDocument(file) ?: return
 
-        for ((_, line, column, level, message) in problems) {
-            val annotationLine = if (document.lineCount < line) document.lineCount - 1 else line - 1
-            val annotationColumn = column - 1
-            val startOffset = document.getLineStartOffset(annotationLine) + annotationColumn
-            val endOffset = document.getLineEndOffset(annotationLine)
+        for (problem in problems) {
+            var (_, line, column, level, message, rule) = problem
+
+            if (line >= document.lineCount) {
+                line = document.lineCount - 1
+            }
+
+            val startOffset = document.getLineStartOffset(line) + column
+            val endOffset = document.getLineEndOffset(line)
             val range = TextRange.create(min(startOffset, endOffset), endOffset)
             val severity = level.toHighlightSeverity()
-            val annotation = holder.newAnnotation(severity, message)
+            val annotation = holder.newAnnotation(severity, "$rule: $message")
                 .range(range)
+                .withFix(SuppressLineIntention(problem))
+                .withFix(DisableRuleIntention(rule))
+                .withFix(DisablePluginIntention())
                 .needsUpdateOnTyping()
 
             if (startOffset !in 0 until endOffset) {
@@ -93,8 +99,12 @@ class YamllintExternalAnnotator : ExternalAnnotator<YAMLFile, List<YamllintProbl
 
             return linter.run(arrayOf(relativePath), workspace.path)
         } catch (e: YamllintException) {
-            YamllintNotifications.error("Failed to execute yamllint\n$e\n${e.cause}").notify(project)
-
+            val message = YamllintBundle.message(
+                "annotation.yaml.linters.yamllint.indicator.error",
+                e.message ?: e.javaClass.simpleName,
+                e.cause?.message ?: ""
+            )
+            YamllintNotifications.error(message).notify(project)
             return emptyList()
         }
     }
@@ -102,9 +112,9 @@ class YamllintExternalAnnotator : ExternalAnnotator<YAMLFile, List<YamllintProbl
     private fun createIndicator(file: PsiFile): ProgressIndicator {
         return BackgroundableProcessIndicator(
             file.project,
-            "Yamllint: Analyzing ${file.name}...",
-            "Stop",
-            "Stop file analysis",
+            YamllintBundle.message("annotation.yaml.linters.yamllint.indicator.title", file.name),
+            YamllintBundle.message("annotation.yaml.linters.yamllint.indicator.cancel-label"),
+            YamllintBundle.message("annotation.yaml.linters.yamllint.indicator.cancel-tooltip"),
             false
         )
     }

@@ -1,4 +1,4 @@
-package io.aesy.yamllint
+package io.aesy.yamllint.runner
 
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.params.ParameterizedTest
@@ -11,13 +11,12 @@ import strikt.assertions.isEqualTo
 import java.text.ParseException
 import java.util.stream.Stream
 
-class YamllintOutputParserUnitTest : JUnit5PlatformTest() {
+class YamllintOutputParserUnitTest {
     @ParameterizedTest
     @DisplayName("It should return object representations of the given input")
     @MethodSource("provideValidInput")
     fun testValidInput(input: String, problems: List<YamllintProblem>) {
-        val parser = YamllintOutputParser()
-        val result = parser.parse(input)
+        val result = YamllintOutputParser.parse(input)
 
         expectThat(result).isEqualTo(problems)
     }
@@ -26,8 +25,7 @@ class YamllintOutputParserUnitTest : JUnit5PlatformTest() {
     @DisplayName("It should ignore whitespace")
     @MethodSource("provideWhitespace")
     fun testEmptyInput(input: String) {
-        val parser = YamllintOutputParser()
-        val result = parser.parse(input)
+        val result = YamllintOutputParser.parse(input)
 
         expectThat(result).isEmpty()
     }
@@ -36,14 +34,11 @@ class YamllintOutputParserUnitTest : JUnit5PlatformTest() {
     @DisplayName("It should throw a ParseException if given invalid input")
     @MethodSource("provideInvalidInput")
     fun testInvalidInput(input: String) {
-        val parser = YamllintOutputParser()
-
         expectThrows<ParseException> {
-            parser.parse(input)
+            YamllintOutputParser.parse(input)
         }
     }
 
-    @Suppress("unused")
     companion object {
         @JvmStatic
         fun provideWhitespace(): Stream<Arguments> {
@@ -56,15 +51,36 @@ class YamllintOutputParserUnitTest : JUnit5PlatformTest() {
 
         @JvmStatic
         fun provideValidInput(): Stream<Arguments> {
-            val problem1 = YamllintProblem("file1", 1, 2, YamllintProblem.Level.WARNING, "message1")
-            val problem2 = YamllintProblem("file2", 3, 4, YamllintProblem.Level.ERROR, "message2")
-            val problem3 = YamllintProblem("file", 1, 1, YamllintProblem.Level.ERROR, "message with ] bracket")
+            val problem1 =
+                YamllintProblem("file1", 0, 1, YamllintProblem.Level.WARNING, "message1", "line-length")
+            val problem2 =
+                YamllintProblem("file2", 2, 3, YamllintProblem.Level.ERROR, "message2", "line-length")
+            val problem3 =
+                YamllintProblem("file3", 0, 0, YamllintProblem.Level.ERROR, "message with ] bracket", "line-length")
+            val problem4 =
+                YamllintProblem("file4", 0, 0, YamllintProblem.Level.ERROR, "message with (parens)", "line-length")
 
             return Stream.of(
-                Arguments.of("file1:1:2: [warning] message1", listOf(problem1)),
-                Arguments.of("file1:1:2: [warning] message1\n", listOf(problem1)),
-                Arguments.of("file1:1:2: [warning] message1\nfile2:3:4: [error] message2", listOf(problem1, problem2)),
-                Arguments.of("file:1:1: [error] message with ] bracket", listOf(problem3))
+                Arguments.of(
+                    "file1:1:2: [warning] message1 (line-length)",
+                    listOf(problem1)
+                ),
+                Arguments.of(
+                    "file1:1:2: [warning] message1 (line-length)\n",
+                    listOf(problem1)
+                ),
+                Arguments.of(
+                    "file1:1:2: [warning] message1 (line-length)\nfile2:3:4: [error] message2 (line-length)",
+                    listOf(problem1, problem2)
+                ),
+                Arguments.of(
+                    "file3:1:1: [error] message with ] bracket (line-length)",
+                    listOf(problem3)
+                ),
+                Arguments.of(
+                    "file4:1:1: [error] message with (parens) (line-length)",
+                    listOf(problem4)
+                )
             )
         }
 
