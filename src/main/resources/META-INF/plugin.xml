@@ -38,7 +38,7 @@
         </html>
     ]]></change-notes>
 
-    <idea-version since-build="221.5080.210" />
+    <idea-version since-build="221"/>
 
     <depends>com.intellij.modules.lang</depends>
     <depends optional="true" config-file="plugin-withPython.xml">com.intellij.modules.python</depends>

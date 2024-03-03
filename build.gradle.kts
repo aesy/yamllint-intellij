@@ -1,11 +1,8 @@
-import org.jetbrains.intellij.tasks.PublishPluginTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.13.3"
-    id("org.jetbrains.kotlinx.kover") version "0.6.1"
-    kotlin("jvm") version "1.8.20"
+    id("org.jetbrains.intellij") version "1.17.2"
+    id("org.jetbrains.kotlinx.kover") version "0.7.6"
+    id("org.jetbrains.kotlin.jvm") version "1.9.22"
 }
 
 group = "io.aesy.yamllint"
@@ -16,47 +13,39 @@ repositories {
     mavenLocal()
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-}
-
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.9.2"))
+    testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("io.strikt:strikt-core:0.34.1")
-    testImplementation("io.mockk:mockk:1.13.4")
+    testImplementation("io.mockk:mockk:1.13.10")
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
 }
 
+kotlin {
+    jvmToolchain(11)
+}
+
 intellij {
-    pluginName.set(rootProject.name)
-    version.set("IC-2022.1.1")
-    updateSinceUntilBuild.set(false)
-    plugins.set(listOf("org.jetbrains.plugins.yaml", "PythonCore:221.5591.52"))
+    pluginName = rootProject.name
+    version = "2022.1.1"
+    type = "IC"
+    updateSinceUntilBuild = false
+    plugins = listOf("org.jetbrains.plugins.yaml", "PythonCore:221.5591.52")
 }
 
 tasks {
-    koverReport {
-        dependsOn(withType<Test>())
+    wrapper {
+        gradleVersion = "8.5"
     }
 
-    withType<Wrapper> {
-        gradleVersion = "7.5"
-    }
-
-    withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "11"
-        }
-    }
-
-    withType<Test> {
+    test {
         useJUnitPlatform()
-        finalizedBy(koverReport)
     }
 
-    withType<PublishPluginTask> {
-        token.set(System.getenv("INTELLIJ_HUB_TOKEN"))
+    publishPlugin {
+        token = System.getenv("INTELLIJ_HUB_TOKEN")
     }
 }

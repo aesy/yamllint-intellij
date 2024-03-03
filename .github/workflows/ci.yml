@@ -31,7 +31,7 @@ jobs:
       with:
         java-version: 11
     - name: Test with Gradle
-      run: ./gradlew test --info
+      run: ./gradlew koverXmlReport --info
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       with:

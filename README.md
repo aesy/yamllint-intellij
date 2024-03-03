@@ -33,7 +33,7 @@ Open a Yaml file, warnings and errors should be displayed inline according to yo
 
 #### Prerequisites
 
-* [Gradle 7.5+](https://gradle.org/)
+* [Gradle 8.5+](https://gradle.org/)
 * [A Java 11+ Runtime](https://adoptopenjdk.net/)
 
 #### Build
