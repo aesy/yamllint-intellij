@@ -5,7 +5,11 @@ import com.intellij.util.xmlb.annotations.Tag
 
 @State(
     name = "YamllintSettings",
-    storages = [Storage("yamllint.xml")]
+    storages = [Storage(
+        value = "yamllint.xml",
+        roamingType = RoamingType.PER_OS,
+    )],
+    category = SettingsCategory.TOOLS,
 )
 class YamllintSettings: PersistentStateComponent<YamllintSettings> {
     companion object {
