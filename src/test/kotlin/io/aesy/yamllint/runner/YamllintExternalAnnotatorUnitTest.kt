@@ -2,11 +2,9 @@ package io.aesy.yamllint.runner
 
 import com.intellij.lang.annotation.*
 import com.intellij.openapi.application.WriteAction
-import com.intellij.openapi.util.TextRange
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import io.aesy.yamllint.IntelliJ
 import io.aesy.yamllint.IntelliJExtension
-import io.aesy.yamllint.intention.*
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension

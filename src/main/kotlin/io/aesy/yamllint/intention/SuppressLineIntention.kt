@@ -10,6 +10,7 @@ import com.intellij.psi.util.nextLeaf
 import io.aesy.yamllint.runner.YamllintProblem
 import io.aesy.yamllint.util.YamlPsiElementFactory
 import io.aesy.yamllint.util.YamllintBundle
+import org.jetbrains.yaml.YAMLUtil
 
 class SuppressLineIntention(
     private val problem: YamllintProblem
@@ -32,19 +33,31 @@ class SuppressLineIntention(
 
     override fun invoke(project: Project, editor: Editor, file: PsiFile) {
         val document = editor.document
-        val prevElement = file.findElementAt(document.getLineStartOffset(problem.line - 1))?.nextLeaf(true)
-        val prevText = prevElement?.text?.trimStart('#')?.trimStart()
 
-        if (prevElement is PsiComment && prevText != null && prevText.startsWith("yamllint disable-line")) {
-            val comment = YamlPsiElementFactory.createComment(project, "$prevText rule:${problem.rule}")
-            prevElement.replace(comment)
-        } else {
-            val errorElement = file.findElementAt(document.getLineStartOffset(problem.line) + problem.column) ?: return
-            val comment = YamlPsiElementFactory.createComment(project, "yamllint disable-line rule:${problem.rule}")
+        if (problem.line > 0) {
+            val offset = document.getLineStartOffset(problem.line - 1) + problem.column
+            val prevElement = file.findElementAt(offset)
 
-            errorElement.parent.addBefore(comment, errorElement)
-            errorElement.parent.addBefore(YamlPsiElementFactory.createNewLine(project), errorElement)
+            if (prevElement is PsiComment) {
+                val prevText = prevElement.text.trimStart('#').trimStart()
+
+                if (prevText.startsWith("yamllint disable-line")) {
+                    val comment = YamlPsiElementFactory.createComment(project, "$prevText rule:${problem.rule}")
+                    prevElement.replace(comment)
+                    DaemonCodeAnalyzer.getInstance(project).restart(file)
+                    return
+                }
+            }
         }
+
+        val lineStart = document.getLineStartOffset(problem.line)
+        val element = file.findElementAt(lineStart) ?: return
+        val indent = YAMLUtil.getIndentInThisLine(element)
+        val comment = "yamllint disable-line rule:${problem.rule}"
+
+        element.parent.addBefore(YamlPsiElementFactory.createComment(project, comment), element)
+        element.parent.addBefore(YamlPsiElementFactory.createNewLine(project), element)
+        element.parent.addBefore(YamlPsiElementFactory.createIndent(project, indent), element)
 
         DaemonCodeAnalyzer.getInstance(project).restart(file)
     }

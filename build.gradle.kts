@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "io.aesy.yamllint"
-version = "0.3"
+version = "0.4"
 
 repositories {
     mavenCentral()

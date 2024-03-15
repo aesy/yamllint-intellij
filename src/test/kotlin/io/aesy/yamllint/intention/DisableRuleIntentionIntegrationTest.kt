@@ -1,23 +1,23 @@
-package io.aesy.yamllint.runner
+package io.aesy.yamllint.intention
 
 import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import io.aesy.yamllint.IntelliJ
 import io.aesy.yamllint.IntelliJExtension
 import io.aesy.yamllint.settings.YamllintSettings
-import io.aesy.yamllint.startup.*
-import org.jetbrains.yaml.psi.YAMLFile
+import io.aesy.yamllint.startup.YamllintExecutableProvider
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import strikt.api.expectThat
-import strikt.assertions.isEmpty
-import strikt.assertions.isNotEmpty
+import strikt.assertions.containsExactly
+import strikt.assertions.isFalse
 
 @ExtendWith(IntelliJExtension::class)
-class YamllintExternalAnnotatorIntegrationTest {
+class DisableRuleIntentionIntegrationTest {
     @IntelliJ
     private lateinit var fixture: CodeInsightTestFixture
 
@@ -35,30 +35,19 @@ class YamllintExternalAnnotatorIntegrationTest {
     }
 
     @Test
-    @DisplayName("It should return an empty list when annotating a valid file")
-    fun testAnnotateValidFile() {
-        val results = annotateFile("valid.yml")
+    @DisplayName("It should be possible to disable a rule")
+    fun testDisableRule() {
+        val file = fixture.configureByText("woop.yml", "key: 'value'")
+        val offset = StringUtil.lineColToOffset(file.text, 0, 2)
 
-        expectThat(results).isEmpty()
-    }
+        WriteAction.runAndWait<Throwable> { fixture.editor.caretModel.moveToOffset(offset) }
 
-    @Test
-    @DisplayName("It should return all problems when annotating an invalid file")
-    fun testAnnotateInvalidFile() {
-        val results = annotateFile("invalid.yml")
+        val intention = fixture.findSingleIntention("Disable 'document-start' for project")
 
-        expectThat(results).isNotEmpty()
-    }
+        fixture.launchAction(intention)
 
-    private fun annotateFile(filePath: String): List<YamllintProblem> {
-        val annotator = YamllintExternalAnnotator()
-        val virtualFile = fixture.copyFileToProject(filePath)
+        val settings = project.service<YamllintSettings>()
 
-        return WriteAction.computeAndWait<List<YamllintProblem>, Throwable> {
-            val psiManager = fixture.psiManager
-            val psiFile = psiManager.findFile(virtualFile) as YAMLFile
-
-            annotator.doAnnotate(psiFile)
-        }
+        expectThat(settings.disabledRules).containsExactly("document-start")
     }
 }

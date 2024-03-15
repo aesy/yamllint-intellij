@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>io.aesy.yamllint</id>
     <name>Yamllint</name>
-    <version>0.3</version>
+    <version>0.4</version>
     <vendor email="isak.wertwein@gmail.com" url="https://github.com/aesy/yamllint-intellij">Isak Wertwein</vendor>
     <category>Inspection</category>
 
@@ -20,6 +20,11 @@
 
     <change-notes><![CDATA[
         <html>
+        <b>Changes in version 0.4:</b>
+        <ul>
+          <li>Fix IndexOutOfBoundsException thrown when disabling the `document-start` rule.</li>
+          <li>Support settings sync.</li>
+        </ul>
         <b>Changes in version 0.3:</b>
         <ul>
           <li>Add notification suggesting to enable plugin if applicable to project.</li>
