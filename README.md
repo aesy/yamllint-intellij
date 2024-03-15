@@ -13,7 +13,7 @@ A plugin providing static code analysis of Yaml files through integration with [
 
 ## Installation 
 
-Download and install the plugin through your IDE or through [the marketplace](https://plugins.jetbrains.com/plugin/https://plugins.jetbrains.com/plugin/15349-yamllint).
+Download and install the plugin through your IDE or through [the marketplace](https://plugins.jetbrains.com/plugin/15349-yamllint).
 
 ## Usage
 
