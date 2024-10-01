@@ -6,7 +6,6 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiFile
-import com.intellij.psi.util.nextLeaf
 import io.aesy.yamllint.runner.YamllintProblem
 import io.aesy.yamllint.util.YamlPsiElementFactory
 import io.aesy.yamllint.util.YamllintBundle

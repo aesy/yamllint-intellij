@@ -6,7 +6,6 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.python.sdk.PythonSdkUtil
-import java.nio.file.Paths
 
 class YamllintPythonVirtualEnvExecutableProvider: YamllintExecutableProvider {
     private val executableName: String = if (SystemInfo.isWindows) {
@@ -21,8 +20,8 @@ class YamllintPythonVirtualEnvExecutableProvider: YamllintExecutableProvider {
         val projectRootManager = ProjectRootManager.getInstance(project)
         val sdk = projectRootManager.projectSdk ?: return null
         val home = sdk.homeDirectory ?: return null
-        val path = PythonSdkUtil.getExecutablePath(home.path, executableName) ?: return null
+        val path = PythonSdkUtil.getExecutablePath(home.toNioPath(), executableName) ?: return null
 
-        return VfsUtil.findFile(Paths.get(path), false)
+        return VfsUtil.findFile(path, false)
     }
 }

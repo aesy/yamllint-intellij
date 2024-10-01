@@ -1,5 +1,5 @@
 <idea-plugin>
     <extensions defaultExtensionNs="io.aesy.yamllint">
-        <yamllintExecutableProvider implementationClass="io.aesy.yamllint.startup.YamllintPythonVirtualEnvExecutableProvider"/>
+        <yamllintExecutableProvider implementation="io.aesy.yamllint.startup.YamllintPythonVirtualEnvExecutableProvider"/>
     </extensions>
 </idea-plugin>

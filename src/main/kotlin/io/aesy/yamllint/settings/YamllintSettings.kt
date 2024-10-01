@@ -17,16 +17,16 @@ class YamllintSettings: PersistentStateComponent<YamllintSettings> {
     }
 
     @Tag
-    var enabled = false
+    var enabled: Boolean = false
 
     @Tag
-    var binPath = ""
+    var binPath: String = ""
 
     @Tag
-    var configPath = ""
+    var configPath: String = ""
 
     @Tag
-    var disabledRules = emptySet<String>()
+    var disabledRules: Set<String> = emptySet<String>()
 
     override fun getState(): YamllintSettings = this
 

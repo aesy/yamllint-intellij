@@ -14,7 +14,6 @@ import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import strikt.api.expectThat
 import strikt.assertions.containsExactly
-import strikt.assertions.isFalse
 
 @ExtendWith(IntelliJExtension::class)
 class DisableRuleIntentionIntegrationTest {

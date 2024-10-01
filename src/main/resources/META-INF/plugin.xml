@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>io.aesy.yamllint</id>
     <name>Yamllint</name>
-    <version>0.4</version>
+    <version>0.5</version>
     <vendor email="isak.wertwein@gmail.com" url="https://github.com/aesy/yamllint-intellij">Isak Wertwein</vendor>
     <category>Inspection</category>
 
@@ -20,6 +20,10 @@
 
     <change-notes><![CDATA[
         <html>
+        <b>Changes in version 0.5:</b>
+        <ul>
+          <li>Fix use of deprecated APIs.</li>
+        </ul>
         <b>Changes in version 0.4:</b>
         <ul>
           <li>Fix IndexOutOfBoundsException thrown when disabling the `document-start` rule.</li>
@@ -60,7 +64,11 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <editorNotificationProvider implementation="io.aesy.yamllint.startup.YamllintActivationNotificationProvider" />
-        <notificationGroup id="Yamllint" displayType="BALLOON" />
+        <notificationGroup
+                id="Yamllint"
+                displayType="BALLOON"
+                key="notification.group.yamllint"
+                bundle="messages.YamllintBundle" />
         <projectConfigurable
                 instance="io.aesy.yamllint.settings.YamllintConfigurable"
                 groupId="tools"
@@ -75,6 +83,6 @@
     </extensions>
 
     <extensions defaultExtensionNs="io.aesy.yamllint">
-        <yamllintExecutableProvider implementationClass="io.aesy.yamllint.startup.YamllintPathExecutableProvider" />
+        <yamllintExecutableProvider implementation="io.aesy.yamllint.startup.YamllintPathExecutableProvider" />
     </extensions>
 </idea-plugin>

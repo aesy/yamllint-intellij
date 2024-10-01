@@ -75,17 +75,17 @@ class YamllintConfigurable(
         }
 
         binPath.addBrowseFolderListener(
-            YamllintBundle.message("settings.yaml.linters.yamllint.configurable.binpath-label"),
-            YamllintBundle.message("settings.yaml.linters.yamllint.configurable.binpath-description"),
             project,
-            FileChooserDescriptorFactory.createSingleFileDescriptor(),
+            FileChooserDescriptorFactory.createSingleFileDescriptor()
+                .withTitle(YamllintBundle.message("settings.yaml.linters.yamllint.configurable.binpath-label"))
+                .withDescription(YamllintBundle.message("settings.yaml.linters.yamllint.configurable.binpath-description")),
         )
 
         configPath.addBrowseFolderListener(
-            YamllintBundle.message("settings.yaml.linters.yamllint.configurable.confpath-label"),
-            YamllintBundle.message("settings.yaml.linters.yamllint.configurable.confpath-description"),
             project,
-            FileChooserDescriptorFactory.createSingleFileDescriptor(),
+            FileChooserDescriptorFactory.createSingleFileDescriptor()
+                .withTitle(YamllintBundle.message("settings.yaml.linters.yamllint.configurable.confpath-label"))
+                .withDescription(YamllintBundle.message("settings.yaml.linters.yamllint.configurable.confpath-description")),
         )
 
         disabledRules = TextFieldWithAutoCompletion.create(project, Yamllint.RULES, true, "")

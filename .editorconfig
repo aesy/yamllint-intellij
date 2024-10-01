@@ -9,10 +9,10 @@ insert_final_newline = true
 [*.md]
 trim_trailing_whitespace = false
 
-[*.{html, xml, json, yml, yaml}]
+[*.{html,xml,json,yml,yaml}]
 indent_style = space
 tab_width = 4
 
-[*.{kt, java}]
+[*.{kt,java}]
 indent_style = space
 tab_width = 4
