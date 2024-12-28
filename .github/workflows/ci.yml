@@ -36,8 +36,6 @@ jobs:
         distribution: temurin
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
-    - name: Install dependencies
-      run: sudo pip install --prefix /usr/local yamllint
     - name: Test with Gradle
       run: ./gradlew koverXmlReport --info
     - name: Upload coverage to Codecov

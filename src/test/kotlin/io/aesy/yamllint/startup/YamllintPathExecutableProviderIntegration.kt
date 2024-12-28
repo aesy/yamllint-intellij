@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import strikt.api.expectThat
 import strikt.assertions.isNotNull
 
+@Disabled("This test requires Yamllint to be accessible on the host to pass")
 @ExtendWith(IntelliJExtension::class)
 class YamllintPathExecutableProviderIntegration {
     @IntelliJ

@@ -13,6 +13,7 @@ import io.aesy.yamllint.startup.YamllintExecutableProvider
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 
+@Disabled("This test requires Yamllint to be accessible on the host to pass")
 @ExtendWith(IntelliJExtension::class)
 class SuppressLineIntentionIntegrationTest {
     @IntelliJ

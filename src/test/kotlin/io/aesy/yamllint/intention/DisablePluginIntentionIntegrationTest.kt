@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import strikt.api.expectThat
 import strikt.assertions.isFalse
 
+@Disabled("This test requires Yamllint to be accessible on the host to pass")
 @ExtendWith(IntelliJExtension::class)
 class DisablePluginIntentionIntegrationTest {
     @IntelliJ

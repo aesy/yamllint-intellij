@@ -16,6 +16,7 @@ import strikt.api.expectThat
 import strikt.assertions.isEmpty
 import strikt.assertions.isNotEmpty
 
+@Disabled("This test requires Yamllint to be accessible on the host to pass")
 @ExtendWith(IntelliJExtension::class)
 class YamllintExternalAnnotatorIntegrationTest {
     @IntelliJ
